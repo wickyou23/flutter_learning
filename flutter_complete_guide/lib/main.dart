@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/answer_button.dart';
-import 'package:flutter_complete_guide/question_text.dart';
+import 'package:flutter_complete_guide/quiz.dart';
+
+import 'result.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,23 +13,39 @@ class MyApp extends StatefulWidget {
 
 class _MyApp extends State<StatefulWidget> {
   var _indexQuestion = 0;
+  var _totalScore = 0;
   final _questions = const [
     {
       'questionText': 'What\'s your favorite color?',
-      'answers': ['Red', 'Green', 'Blue', 'Yellow'],
+      'answers': [
+        {'text': 'Red', 'score': 3},
+        {'text': 'Green', 'score': 8},
+        {'text': 'Blue', 'score': 1},
+        {'text': 'Yellow', 'score': 4}
+      ],
     },
     {
       'questionText': 'What\'s your favorite animal?',
-      'answers': ['Snake', 'Dog', 'Cat', 'Elephant'],
+      'answers': [
+        {'text': 'Snake', 'score': 3},
+        {'text': 'Dog', 'score': 8},
+        {'text': 'Cat', 'score': 1},
+        {'text': 'Elephant', 'score': 4}
+      ],
     },
   ];
 
-  void _answerQuestion() {
+  void _answerQuestion(num score) {
+    _totalScore += score;
     setState(() {
       _indexQuestion += 1;
-      if (_indexQuestion >= _questions.length) {
-        _indexQuestion = 0;
-      }
+    });
+  }
+
+  void _resetQuiz() {
+    setState(() {
+      _indexQuestion = 0;
+      _totalScore = 0;
     });
   }
 
@@ -52,16 +69,9 @@ class _MyApp extends State<StatefulWidget> {
                 opacity: 0.7,
               ),
               Container(
-                child: Column(
-                  children: [
-                    QuestionText(_questions[_indexQuestion]['questionText']),
-                    ...(_questions[_indexQuestion]['answers'] as List<String>)
-                        .map((text) => AnswerButton(
-                              title: text,
-                              selectedHandler: _answerQuestion,
-                            ))
-                  ],
-                ),
+                child: (_indexQuestion < _questions.length)
+                    ? Quiz(_questions[_indexQuestion], _answerQuestion)
+                    : Result(_totalScore, _resetQuiz),
               ),
             ],
           )),
