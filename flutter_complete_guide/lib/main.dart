@@ -12,14 +12,23 @@ class MyApp extends StatefulWidget {
 
 class _MyApp extends State<StatefulWidget> {
   var _indexQuestion = 0;
-  var _questions = [
-    'What\'s your favorite color?',
-    'What\'s your favorite animal?',
+  final _questions = const [
+    {
+      'questionText': 'What\'s your favorite color?',
+      'answers': ['Red', 'Green', 'Blue', 'Yellow'],
+    },
+    {
+      'questionText': 'What\'s your favorite animal?',
+      'answers': ['Snake', 'Dog', 'Cat', 'Elephant'],
+    },
   ];
 
   void _answerQuestion() {
     setState(() {
       _indexQuestion += 1;
+      if (_indexQuestion >= _questions.length) {
+        _indexQuestion = 0;
+      }
     });
   }
 
@@ -27,27 +36,35 @@ class _MyApp extends State<StatefulWidget> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('My First App'),
-        ),
-        body: Column(
-          children: [
-            QuestionText(_questions[_indexQuestion]),
-            AnswerButton(
-              title: 'Answer 1',
-              selectedHandler: _answerQuestion,
-            ),
-            AnswerButton(
-              title: 'Answer 2',
-              selectedHandler: _answerQuestion,
-            ),
-            AnswerButton(
-              title: 'Answer 3',
-              selectedHandler: _answerQuestion,
-            ),
-          ],
-        ),
-      ),
+          appBar: AppBar(
+            title: Text('My First App'),
+          ),
+          body: Stack(
+            children: [
+              Opacity(
+                child: Container(
+                  width: double.infinity,
+                  child: Image.asset(
+                    'images/background_image.jpg',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                opacity: 0.7,
+              ),
+              Container(
+                child: Column(
+                  children: [
+                    QuestionText(_questions[_indexQuestion]['questionText']),
+                    ...(_questions[_indexQuestion]['answers'] as List<String>)
+                        .map((text) => AnswerButton(
+                              title: text,
+                              selectedHandler: _answerQuestion,
+                            ))
+                  ],
+                ),
+              ),
+            ],
+          )),
     );
   }
 }

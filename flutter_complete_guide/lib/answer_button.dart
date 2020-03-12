@@ -13,20 +13,17 @@ class AnswerButton extends StatelessWidget {
       height: 50,
       margin: EdgeInsets.all(16),
       child: Container(
-        decoration: BoxDecoration(
+        child: RaisedButton(
+          textColor: Colors.white,
+          child: Text(
+            title,
+          ),
           color: Colors.blue,
-          borderRadius: BorderRadius.circular(100),
+          onPressed: selectedHandler,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(6),
+          ),
         ),
-        // child: RaisedButton(
-        //   child: Text(
-        //     title,
-        //     style: TextStyle(
-        //       color: Colors.white,
-        //     ),
-        //   ),
-        //   // color: Colors.blue,
-        //   onPressed: selectedHandler,
-        // ),
       ),
     );
   }
