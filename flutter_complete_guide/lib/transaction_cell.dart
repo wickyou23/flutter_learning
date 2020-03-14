@@ -26,12 +26,12 @@ class TransactionCell extends StatelessWidget {
                 ),
               ),
               child: Text(
-                '${transaction.amount.toString()}',
+                '\$${transaction.amount.toString()}',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   color: Colors.purple,
-                  fontSize: 18,
+                  fontSize: 17,
                 ),
               ),
             ),
@@ -41,11 +41,19 @@ class TransactionCell extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    Text('Product: ${transaction.title}'),
+                    Text(
+                      'Product: ${transaction.title}',
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
                     SizedBox(
                       height: 5,
                     ),
-                    Text('Order date: ${transaction.date.csToString('dd/MM/yyyy hh:mm')}'),
+                    Text(
+                      'Order date: ${transaction.date.csToString('dd/MM/yyyy hh:mm')}',
+                      style: TextStyle(fontSize: 13),
+                    ),
                   ],
                 ),
               ),
