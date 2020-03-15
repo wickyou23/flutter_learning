@@ -21,7 +21,7 @@ class TransactionCell extends StatelessWidget {
               margin: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Colors.purple,
+                  color: Theme.of(context).primaryColor,
                   width: 2.0,
                 ),
               ),
@@ -30,7 +30,7 @@ class TransactionCell extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
-                  color: Colors.purple,
+                  color: Theme.of(context).primaryColor,
                   fontSize: 17,
                 ),
               ),

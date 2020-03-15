@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 
-class TransactionInput extends StatelessWidget {
-  final productTFController = TextEditingController();
-  final amountTFController = TextEditingController();
+class TransactionInput extends StatefulWidget {
   final void Function(String, double) addActionHandler;
 
   TransactionInput({@required this.addActionHandler});
+
+  @override
+  _TransactionInputState createState() => _TransactionInputState();
+}
+
+class _TransactionInputState extends State<TransactionInput> {
+  final productTFController = TextEditingController();
+
+  final amountTFController = TextEditingController();
 
   void _checkCondition() {
     final productName = productTFController.text;
@@ -15,10 +22,12 @@ class TransactionInput extends StatelessWidget {
       return;
     }
 
-    addActionHandler(
+    widget.addActionHandler(
       productName,
       amount,
     );
+
+    Navigator.of(context).pop();
   }
 
   @override
@@ -43,9 +52,11 @@ class TransactionInput extends StatelessWidget {
                 controller: productTFController,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
+                  hintText: 'Product name',
+                  hintStyle: TextStyle(fontSize: 15),
                   border: OutlineInputBorder(),
-                  labelText: 'Product name',
-                  labelStyle: TextStyle(fontSize: 12),
+                  contentPadding: EdgeInsets.only(left: 8, right: 8),
+                  focusColor: Theme.of(context).primaryColor,
                 ),
                 onSubmitted: (_) => FocusScope.of(context).nextFocus(),
               ),
@@ -61,16 +72,18 @@ class TransactionInput extends StatelessWidget {
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.done,
                 decoration: InputDecoration(
-                  labelText: 'Amount',
-                  labelStyle: TextStyle(fontSize: 12),
+                  hintText: 'Amount',
+                  hintStyle: TextStyle(fontSize: 15),
                   border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.only(left: 8, right: 8),
+                  focusColor: Theme.of(context).primaryColor,
                 ),
                 onSubmitted: (_) => _checkCondition(),
               ),
             ),
             FlatButton(
               padding: EdgeInsets.all(0),
-              textColor: Colors.blue,
+              textColor: Theme.of(context).primaryColor,
               child: Text('Add Transaction'),
               onPressed: () => _checkCondition(),
             ),
