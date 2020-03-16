@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/transaction_chart.dart';
 import 'package:flutter_complete_guide/transaction_input.dart';
 import 'package:uuid/uuid.dart';
 
-import 'transaction.dart';
+import './models/transaction.dart';
 import 'transaction_list.dart';
 
 class MyHomeApp extends StatefulWidget {
@@ -60,9 +61,7 @@ class _MyHomeApp extends State<MyHomeApp> {
       ),
       body: Column(
         children: <Widget>[
-          Card(
-            child: Text('Chart here'),
-          ),
+          TransactionChart(_transactions),
           TransactionList(_transactions),
         ],
       ),

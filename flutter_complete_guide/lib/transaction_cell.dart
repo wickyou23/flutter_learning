@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/transaction.dart';
-import 'package:intl/intl.dart';
+
+import './models/transaction.dart';
+import './utils/datetime_ext.dart';
 
 class TransactionCell extends StatelessWidget {
   final Transaction transaction;
@@ -62,12 +63,5 @@ class TransactionCell extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-extension DateTime_Ext on DateTime {
-  String csToString(String formatString) {
-    var format = DateFormat(formatString);
-    return format.format(this);
   }
 }

@@ -11,7 +11,6 @@ class TransactionInput extends StatefulWidget {
 
 class _TransactionInputState extends State<TransactionInput> {
   final productTFController = TextEditingController();
-
   final amountTFController = TextEditingController();
 
   void _checkCondition() {
