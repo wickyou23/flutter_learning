@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/transaction_chart.dart';
 import 'package:flutter_complete_guide/transaction_input.dart';
+import 'package:flutter_complete_guide/utils/datetime_ext.dart';
 import 'package:uuid/uuid.dart';
 
 import './models/transaction.dart';
@@ -12,21 +13,14 @@ class MyHomeApp extends StatefulWidget {
 }
 
 class _MyHomeApp extends State<MyHomeApp> {
-  final _transactions = <Transaction>[
-    // Transaction(
-    //   id: Uuid().v1(),
-    //   title: 'Shoes',
-    //   amount: 15.99,
-    //   date: DateTime.now(),
-    // ),
-  ];
+  final _transactions = <Transaction>[];
 
-  void _addTransaction(String productName, double amount) {
+  void _addTransaction(String productName, double amount, DateTime dateTime) {
     final newTransaction = Transaction(
       id: Uuid().v1(),
       title: productName,
       amount: amount,
-      date: DateTime.now(),
+      date: dateTime,
     );
 
     setState(() {
@@ -47,6 +41,16 @@ class _MyHomeApp extends State<MyHomeApp> {
     );
   }
 
+  List<Transaction> get _getRecentTransactionInAWeek {
+    final dateInWeek = DateTimeExt.dateInWeekByDate(DateTime.now());
+    final now = DateTime.now().millisecondsSinceEpoch;
+    return _transactions.where((item) {
+      final milliSecond = item.date.millisecondsSinceEpoch;
+      return (milliSecond >= dateInWeek.first.millisecondsSinceEpoch &&
+          milliSecond <= now);
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +65,7 @@ class _MyHomeApp extends State<MyHomeApp> {
       ),
       body: Column(
         children: <Widget>[
-          TransactionChart(_transactions),
+          TransactionChart(_getRecentTransactionInAWeek),
           TransactionList(_transactions),
         ],
       ),

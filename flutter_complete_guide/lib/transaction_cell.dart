@@ -21,18 +21,26 @@ class TransactionCell extends StatelessWidget {
               alignment: AlignmentDirectional.center,
               margin: EdgeInsets.all(10),
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(4),
+                ),
                 border: Border.all(
                   color: Theme.of(context).primaryColor,
-                  width: 2.0,
+                  width: 1.0,
                 ),
               ),
-              child: Text(
-                '\$${transaction.amount.toString()}',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: Theme.of(context).primaryColor,
-                  fontSize: 17,
+              child: Container(
+                padding: EdgeInsets.all(4),
+                child: FittedBox(
+                  child: Text(
+                    '\$${transaction.amount.toString()}',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).primaryColor,
+                      fontSize: 17,
+                    ),
+                  ),
                 ),
               ),
             ),

@@ -11,7 +11,16 @@ class TransactionBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        Text('\$${this.amount.toStringAsFixed(2)}'),
+        Container(
+          height: 20,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              '\$${this.amount.toStringAsFixed(2)}',
+              style: TextStyle(fontSize: 14),
+            ),
+          ),
+        ),
         SizedBox(
           height: 5,
         ),
@@ -21,9 +30,10 @@ class TransactionBar extends StatelessWidget {
           ),
           child: Container(
             width: 10,
-            height: 60,
+            height: 70,
             color: Colors.grey.withAlpha((255 * 0.4).toInt()),
             child: FractionallySizedBox(
+              alignment: AlignmentDirectional.bottomEnd,
               heightFactor: percent,
               child: Container(
                 color: Theme.of(context).primaryColor,

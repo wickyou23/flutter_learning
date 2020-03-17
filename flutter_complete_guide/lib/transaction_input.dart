@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class TransactionInput extends StatefulWidget {
-  final void Function(String, double) addActionHandler;
+  final void Function(String, double, DateTime) addActionHandler;
 
   TransactionInput({@required this.addActionHandler});
 
@@ -10,12 +11,13 @@ class TransactionInput extends StatefulWidget {
 }
 
 class _TransactionInputState extends State<TransactionInput> {
-  final productTFController = TextEditingController();
-  final amountTFController = TextEditingController();
+  final _productTFController = TextEditingController();
+  final _amountTFController = TextEditingController();
+  DateTime _selectedDate;
 
   void _checkCondition() {
-    final productName = productTFController.text;
-    final amount = double.tryParse(amountTFController.text) ?? -1;
+    final productName = _productTFController.text;
+    final amount = double.tryParse(_amountTFController.text) ?? -1;
 
     if (productName.isEmpty || amount < 0) {
       return;
@@ -24,9 +26,27 @@ class _TransactionInputState extends State<TransactionInput> {
     widget.addActionHandler(
       productName,
       amount,
+      _selectedDate
     );
 
     Navigator.of(context).pop();
+  }
+
+  void _presentDatePicker() {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+    ).then((selectedDate) {
+      if (selectedDate == null) {
+        return;
+      }
+
+      setState(() {
+        _selectedDate = selectedDate;
+      });
+    });
   }
 
   @override
@@ -48,7 +68,7 @@ class _TransactionInputState extends State<TransactionInput> {
               height: 45,
               color: Colors.white,
               child: TextField(
-                controller: productTFController,
+                controller: _productTFController,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
                   hintText: 'Product name',
@@ -67,7 +87,7 @@ class _TransactionInputState extends State<TransactionInput> {
               height: 45,
               color: Colors.white,
               child: TextField(
-                controller: amountTFController,
+                controller: _amountTFController,
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.done,
                 decoration: InputDecoration(
@@ -80,9 +100,33 @@ class _TransactionInputState extends State<TransactionInput> {
                 onSubmitted: (_) => _checkCondition(),
               ),
             ),
-            FlatButton(
-              padding: EdgeInsets.all(0),
-              textColor: Theme.of(context).primaryColor,
+            SizedBox(
+              height: 5,
+            ),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(_selectedDate == null
+                      ? 'No date chosen!'
+                      : 'Date chosen: ${DateFormat.yMd().format(_selectedDate)}'),
+                ),
+                FlatButton(
+                  padding: EdgeInsets.all(0),
+                  textColor: Theme.of(context).primaryColor,
+                  child: Text(
+                    'Choose Date',
+                    style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onPressed: _presentDatePicker,
+                ),
+              ],
+            ),
+            RaisedButton(
+              color: Theme.of(context).primaryColor,
+              textColor: Colors.white,
               child: Text('Add Transaction'),
               onPressed: () => _checkCondition(),
             ),

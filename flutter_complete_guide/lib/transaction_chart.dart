@@ -41,13 +41,18 @@ class TransactionChart extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(8),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            ...groupedTransaction.map((item) => TransactionBar(
+            ...groupedTransaction.map(
+              (item) => Flexible(
+                fit: FlexFit.tight,
+                child: TransactionBar(
                   (item['day'] as String),
                   (item['amount'] as double),
                   (item['percent'] as double),
-                ))
+                ),
+              ),
+            )
           ],
         ),
       ),
