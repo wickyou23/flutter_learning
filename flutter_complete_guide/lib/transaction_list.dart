@@ -5,12 +5,13 @@ import 'transaction_cell.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
+  final Function deleteTransactionHandler;
 
-  TransactionList(this.transactions);
+  TransactionList(this.transactions, this.deleteTransactionHandler);
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return Container(
       child: transactions.isEmpty
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -40,7 +41,7 @@ class TransactionList extends StatelessWidget {
           : Container(
               child: ListView.builder(
                 itemBuilder: (ctx, idx) {
-                  return TransactionCell(transactions[idx]);
+                  return TransactionCell(transactions[idx], deleteTransactionHandler);
                 },
                 itemCount: transactions.length,
               ),

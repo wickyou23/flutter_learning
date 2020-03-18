@@ -51,6 +51,12 @@ class _MyHomeApp extends State<MyHomeApp> {
     }).toList();
   }
 
+  void _deleteTransaction(String id) {
+    setState(() {
+      _transactions.removeWhere((item) => item.id == id);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,7 +72,9 @@ class _MyHomeApp extends State<MyHomeApp> {
       body: Column(
         children: <Widget>[
           TransactionChart(_getRecentTransactionInAWeek),
-          TransactionList(_transactions),
+          Expanded(
+            child: TransactionList(_transactions, _deleteTransaction),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(

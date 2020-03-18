@@ -5,8 +5,9 @@ import './utils/datetime_ext.dart';
 
 class TransactionCell extends StatelessWidget {
   final Transaction transaction;
+  final Function deleteTransactionHandler;
 
-  TransactionCell(this.transaction);
+  TransactionCell(this.transaction, this.deleteTransactionHandler);
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +68,11 @@ class TransactionCell extends StatelessWidget {
                 ),
               ),
             ),
+            IconButton(
+              icon: Icon(Icons.delete),
+              color: Theme.of(context).errorColor,
+              onPressed: () => deleteTransactionHandler(transaction.id),
+            )
           ],
         ),
       ),
