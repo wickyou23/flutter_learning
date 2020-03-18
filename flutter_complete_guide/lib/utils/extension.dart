@@ -1,4 +1,16 @@
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
+
+extension BuildContextExt on BuildContext {
+  ThemeData get theme {
+    return Theme.of(this);
+  }
+
+  MediaQueryData get media {
+    return MediaQuery.of(this);
+  }
+}
+
 
 extension DateTimeExt on DateTime {
   String csToString(String formatString) {
@@ -25,5 +37,30 @@ extension DateTimeExt on DateTime {
     }
 
     return result;
+  }
+}
+
+
+extension IterableExt on Iterable {
+  Iterable shift(int number) {
+    if (number <= 0) {
+      return this;
+    }
+    
+    final sub = this.length - number;
+    return Iterable.generate(this.length, (index) {
+      if (sub + index < this.length) {
+        return this.elementAt(sub + index);
+      } else {
+        return this.elementAt(index - number);
+      }
+    });
+  }
+}
+
+
+extension MediaQueryDataExt on MediaQueryData {
+  double get contentHeight {
+    return this.size.height - this.padding.top;
   }
 }
