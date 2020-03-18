@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/transaction_chart_bar.dart';
 import 'package:intl/intl.dart';
 
-import './utils/datetime_ext.dart';
+import './utils/extension.dart';
 import './models/transaction.dart';
 
 class TransactionChart extends StatelessWidget {

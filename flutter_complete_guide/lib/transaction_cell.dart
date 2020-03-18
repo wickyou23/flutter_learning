@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import './models/transaction.dart';
-import './utils/datetime_ext.dart';
+import './utils/extension.dart';
 
 class TransactionCell extends StatelessWidget {
   final Transaction transaction;

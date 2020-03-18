@@ -1,8 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
 import 'transaction_home_page.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  // Lock Orientation
+  // SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  //   DeviceOrientation.portraitDown,
+  // ]);
+
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
