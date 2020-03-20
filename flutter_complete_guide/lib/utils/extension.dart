@@ -9,6 +9,14 @@ extension BuildContextExt on BuildContext {
   MediaQueryData get media {
     return MediaQuery.of(this);
   }
+
+  NavigatorState get navigator {
+    return Navigator.of(this);
+  }
+
+  ModalRoute get route {
+    return ModalRoute.of(this);
+  }
 }
 
 
@@ -62,5 +70,16 @@ extension IterableExt on Iterable {
 extension MediaQueryDataExt on MediaQueryData {
   double get contentHeight {
     return this.size.height - this.padding.top;
+  }
+}
+
+
+extension ColorExt on Color {
+  Color withPercentAlpha(double percent) {
+    if (percent >= 1) {
+      return this;
+    }
+
+    return this.withAlpha((255 * percent).toInt());
   }
 }
