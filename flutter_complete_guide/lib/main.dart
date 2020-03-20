@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
-import 'transaction_home_page.dart';
+import 'home_page.dart';
 
 void main() {
   // Lock Orientation
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
               ),
         ),
       ),
-      home: MyHomeApp(),
+      home: HomePage(),
     );
   }
 }
