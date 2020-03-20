@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
-import 'home_page.dart';
+import 'utils/wireframe.dart';
 
 void main() {
   // Lock Orientation
@@ -29,8 +29,14 @@ class MyApp extends StatelessWidget {
                 ),
               ),
         ),
+        textTheme: ThemeData.light().textTheme.copyWith(
+              title: TextStyle(
+                fontFamily: 'NunitoSans',
+                fontSize: 16,
+              ),
+            ),
       ),
-      home: HomePage(),
+      routes: AppWireFrame.routes
     );
   }
 }
