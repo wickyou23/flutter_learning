@@ -17,6 +17,10 @@ extension BuildContextExt on BuildContext {
   ModalRoute get route {
     return ModalRoute.of(this);
   }
+
+  Object get routeArg {
+    return this.route.settings.arguments;
+  }
 }
 
 
