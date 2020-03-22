@@ -33,7 +33,10 @@ class CategoryCell extends StatelessWidget {
           alignment: AlignmentDirectional.bottomStart,
           child: Text(
             categoryItem.title,
-            style: context.theme.textTheme.title,
+            style: context.theme.textTheme.title.copyWith(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
           ),
         ),
       ),

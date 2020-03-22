@@ -32,11 +32,10 @@ class MyApp extends StatelessWidget {
         textTheme: ThemeData.light().textTheme.copyWith(
               title: TextStyle(
                 fontFamily: 'NunitoSans',
-                fontSize: 16,
               ),
             ),
       ),
-      routes: AppWireFrame.routes
+      routes: AppWireFrame.routes,
     );
   }
 }

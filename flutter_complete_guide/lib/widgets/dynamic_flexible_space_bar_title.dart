@@ -70,8 +70,8 @@ class _DynamicFlexibleSpaceBarTitleState
       ),
       child: Text(
         _title,
-        style: TextStyle(
-          fontFamily: 'NunitoSans',
+        style: context.theme.textTheme.title.copyWith(
+          color: Colors.white,
         ),
         softWrap: false,
         maxLines: 1,

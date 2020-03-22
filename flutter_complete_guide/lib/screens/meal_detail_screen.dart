@@ -9,17 +9,18 @@ class MealDetailScreen extends StatefulWidget {
 }
 
 class _MealDetailScreenState extends State<MealDetailScreen> {
-  final double _expandedHeight = 250;
+  
   Meal _meal;
 
   @override
   Widget build(BuildContext context) {
     _meal = context.routeArg as Meal;
+    final double _expandedHeight = context.media.size.height * 0.33;
 
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
-          _sliverAppBar(),
+          _sliverAppBar(_expandedHeight),
           _headerWidget('Ingredients'),
           _ingredientsWidget(),
           _headerWidget('Steps'),
@@ -32,12 +33,12 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
     );
   }
 
-  SliverAppBar _sliverAppBar() {
+  SliverAppBar _sliverAppBar(double expandedHeight) {
     return SliverAppBar(
       floating: true,
       pinned: true,
       snap: false,
-      expandedHeight: _expandedHeight,
+      expandedHeight: expandedHeight,
       flexibleSpace: FlexibleSpaceBar(
         titlePadding: EdgeInsets.zero,
         title: DynamicFlexibleSpaceBarTitle(
@@ -56,21 +57,20 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
       child: Column(
         children: <Widget>[
           Container(
-            padding: EdgeInsets.only(
+            padding: const EdgeInsets.only(
               left: 16,
             ),
             alignment: AlignmentDirectional.centerStart,
             height: 50,
             child: Text(
               title,
-              style: const TextStyle(
-                fontFamily: 'NunitoSans',
+              style: context.theme.textTheme.title.copyWith(
                 fontWeight: FontWeight.w600,
                 fontSize: 20,
               ),
             ),
           ),
-          Divider(
+          const Divider(
             height: 2,
             indent: 16,
           ),
@@ -82,36 +82,37 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
   SliverToBoxAdapter _ingredientsWidget() {
     return SliverToBoxAdapter(
       child: Container(
-        margin: EdgeInsets.only(
+        margin: const EdgeInsets.only(
           left: 16,
           right: 16,
         ),
-        padding: EdgeInsets.only(
+        padding: const EdgeInsets.only(
           top: 8,
           bottom: 8,
         ),
         height: (_meal.ingredients.length * 35 + 16).toDouble(),
         decoration: BoxDecoration(
           color: Colors.blue,
-          borderRadius: BorderRadius.circular(10),
-          gradient: LinearGradient(colors: [
-            Colors.blueAccent.withPercentAlpha(0.8),
-            Colors.blueAccent.withPercentAlpha(0.9),
-            Colors.blueAccent.withPercentAlpha(1.0),
-          ]),
+          borderRadius: const BorderRadius.all(const Radius.circular(10)),
+          gradient: LinearGradient(
+            colors: [
+              Colors.blueAccent.withPercentAlpha(0.8),
+              Colors.blueAccent.withPercentAlpha(0.9),
+              Colors.blueAccent.withPercentAlpha(1.0),
+            ],
+          ),
         ),
         child: ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
           padding: EdgeInsets.zero,
           itemBuilder: (ctx, index) {
             return Container(
-              padding: EdgeInsets.only(left: 16),
+              padding: const EdgeInsets.only(left: 16),
               alignment: AlignmentDirectional.centerStart,
               height: 35,
               child: Text(
                 _meal.ingredients[index],
-                style: TextStyle(
-                  fontFamily: 'NunitoSans',
+                style: context.theme.textTheme.title.copyWith(
                   color: Colors.white,
                   fontSize: 14,
                 ),
