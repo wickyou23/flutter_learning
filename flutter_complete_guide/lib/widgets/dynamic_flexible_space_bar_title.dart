@@ -8,7 +8,7 @@ class DynamicFlexibleSpaceBarTitle extends StatefulWidget {
 
   @override
   _DynamicFlexibleSpaceBarTitleState createState() =>
-      _DynamicFlexibleSpaceBarTitleState(title);
+      _DynamicFlexibleSpaceBarTitleState();
 }
 
 class _DynamicFlexibleSpaceBarTitleState
@@ -16,9 +16,8 @@ class _DynamicFlexibleSpaceBarTitleState
   ScrollPosition _position;
   double _leftPadding = 0;
   double _percent = 0;
-  final String _title;
 
-  _DynamicFlexibleSpaceBarTitleState(this._title);
+  _DynamicFlexibleSpaceBarTitleState();
 
   @override
   void dispose() {
@@ -69,7 +68,7 @@ class _DynamicFlexibleSpaceBarTitleState
         bottom: 14,
       ),
       child: Text(
-        _title,
+        widget.title,
         style: context.theme.textTheme.title.copyWith(
           color: Colors.white,
         ),

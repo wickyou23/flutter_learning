@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/models/app_case.dart';
 import '../widgets/dynamic_flexible_space_bar_title.dart';
 import '../models/meal.dart';
 import '../utils/extension.dart';
@@ -9,25 +10,26 @@ class MealDetailScreen extends StatefulWidget {
 }
 
 class _MealDetailScreenState extends State<MealDetailScreen> {
-  
   Meal _meal;
+  bool _isFavourite = false;
 
   @override
   Widget build(BuildContext context) {
-    _meal = context.routeArg as Meal;
     final double _expandedHeight = context.media.size.height * 0.33;
+    _meal = context.routeArg as Meal;
+    _isFavourite = AppCache().favouriteIds.contains(_meal.id);
 
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
           _sliverAppBar(_expandedHeight),
           _headerWidget('Ingredients'),
+          SliverPadding(padding: const EdgeInsets.only(top: 8.0)),
           _ingredientsWidget(),
           _headerWidget('Steps'),
-          SliverPadding(
-            padding: const EdgeInsets.only(top: 8.0),
-          ),
+          SliverPadding(padding: const EdgeInsets.only(top: 8.0)),
           _stepsWidget(),
+          SliverPadding(padding: const EdgeInsets.only(top: 20.0)),
         ],
       ),
     );
@@ -35,7 +37,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
 
   SliverAppBar _sliverAppBar(double expandedHeight) {
     return SliverAppBar(
-      floating: true,
+      floating: false,
       pinned: true,
       snap: false,
       expandedHeight: expandedHeight,
@@ -49,6 +51,20 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
           fit: BoxFit.cover,
         ),
       ),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(_isFavourite ? Icons.star : Icons.star_border),
+          onPressed: () {
+            setState(() {
+              if (!_isFavourite) {
+                AppCache().favouriteIds.add(_meal.id);
+              } else {
+                AppCache().favouriteIds.removeWhere((id) => _meal.id == id);
+              }
+            });
+          },
+        )
+      ],
     );
   }
 
