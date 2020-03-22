@@ -62,7 +62,7 @@ class _DynamicFlexibleSpaceBarTitleState
   Widget build(BuildContext context) {
     final widthText = context.media.size.width - 13;
     return Container(
-      width: widthText - (_percent >= 0.88 ? widthText * 0.32 : 0),
+      width: widthText - (_percent >= 0.88 ? widthText * 0.32 : 30),
       padding: EdgeInsets.only(
         left: 13 + _leftPadding,
         bottom: 14,
