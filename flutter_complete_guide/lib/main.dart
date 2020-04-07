@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_complete_guide/wireframe.dart';
+import 'bloc/simple_bloc_delegate.dart';
+
 // import 'package:flutter/services.dart';
-import 'utils/wireframe.dart';
 
 void main() {
   // Lock Orientation
@@ -10,6 +13,7 @@ void main() {
   //   DeviceOrientation.portraitDown,
   // ]);
 
+  BlocSupervisor.delegate = SimpleBlocDelegate();
   runApp(MyApp());
 }
 
