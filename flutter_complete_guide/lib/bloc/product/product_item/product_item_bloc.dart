@@ -1,14 +1,21 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_complete_guide/bloc/product/product_bloc.dart';
+import 'package:flutter_complete_guide/bloc/product/product_event.dart';
 import 'package:flutter_complete_guide/bloc/product/product_item/product_item_event.dart';
+import 'package:flutter_complete_guide/bloc/product/product_state.dart';
 import 'package:flutter_complete_guide/bloc/repository/product_repository.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 
 class ProductItemBloc extends Bloc<ProductItemEvent, Product> {
   ProductRepository _productRepository;
   Product product;
+  ProductBloc productBloc;
 
-  ProductItemBloc({@required this.product}) {
+  ProductItemBloc({
+    @required this.product,
+    @required this.productBloc,
+  }) {
     _productRepository = ProductRepository();
   }
 
@@ -21,9 +28,10 @@ class ProductItemBloc extends Bloc<ProductItemEvent, Product> {
       yield* _mapToSetFavoriteEvent(event);
     }
   }
-  
+
   @override
   Future<void> close() {
+    print('ProductItemBloc { product: ${product.id} } closed');
     return super.close();
   }
 
@@ -31,6 +39,13 @@ class ProductItemBloc extends Bloc<ProductItemEvent, Product> {
     _productRepository.setIsFavorite(product.id, event.isFavorite);
     product.isFavorite = event.isFavorite;
     product = product.copyWith(isFavorite: event.isFavorite);
-    yield product;
+    var crProductState = productBloc.state;
+    if (crProductState is ProductLoadedState &&
+        crProductState.isFavoriteFilter) {
+      productBloc.add(ProductFilterFavoriteEvent());
+    }
+    else {
+      yield product;
+    }
   }
 }

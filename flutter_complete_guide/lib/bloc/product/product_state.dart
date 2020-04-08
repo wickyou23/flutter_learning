@@ -11,8 +11,12 @@ abstract class ProductState extends Equatable {
 
 class ProductLoadedState extends ProductState {
   final List<Product> products;
+  final bool isFavoriteFilter;
 
-  const ProductLoadedState({@required this.products});
+  const ProductLoadedState({
+    @required this.products,
+    this.isFavoriteFilter = false,
+  });
 
   @override
   List<Object> get props => [products];
