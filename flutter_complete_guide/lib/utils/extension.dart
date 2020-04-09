@@ -23,7 +23,6 @@ extension BuildContextExt on BuildContext {
   }
 }
 
-
 extension DateTimeExt on DateTime {
   String csToString(String formatString) {
     var format = DateFormat(formatString);
@@ -42,7 +41,7 @@ extension DateTimeExt on DateTime {
   static List<DateTime> dateInWeekByDate(DateTime date) {
     final now = DateTime.now().startOfDate();
     final weekDay = date.weekday;
-    final result = <DateTime>[]; 
+    final result = <DateTime>[];
     for (var i = 1; i <= 7; i++) {
       final calculate = now.add(Duration(days: i - weekDay));
       result.add(calculate);
@@ -52,13 +51,12 @@ extension DateTimeExt on DateTime {
   }
 }
 
-
 extension IterableExt on Iterable {
   Iterable shift(int number) {
     if (number <= 0) {
       return this;
     }
-    
+
     final sub = this.length - number;
     return Iterable.generate(this.length, (index) {
       if (sub + index < this.length) {
@@ -70,13 +68,11 @@ extension IterableExt on Iterable {
   }
 }
 
-
 extension MediaQueryDataExt on MediaQueryData {
   double get contentHeight {
     return this.size.height - this.padding.top;
   }
 }
-
 
 extension ColorExt on Color {
   Color withPercentAlpha(double percent) {

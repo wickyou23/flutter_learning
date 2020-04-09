@@ -43,4 +43,12 @@ class ProductRepository {
   void setIsFavorite(String productId, bool isFavorite) {
     _dummyData.firstWhere((v) => v.id == productId).isFavorite = isFavorite;
   }
+
+  List<Product> getProductByIds(List<String> ids) {
+    return _dummyData.where((v) => ids.contains(v.id));
+  }
+
+  Product getProductById(String productId) {
+    return _dummyData.firstWhere((v) => v.id == productId);
+  }
 }
