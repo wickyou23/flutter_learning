@@ -1,4 +1,3 @@
-import 'package:flutter_complete_guide/bloc/repository/product_repository.dart';
 import 'package:flutter_complete_guide/models/cart.dart';
 import 'package:flutter_complete_guide/models/cart_item.dart';
 import 'package:flutter_complete_guide/models/product.dart';
@@ -8,11 +7,11 @@ Cart _myCard = Cart();
 class CartRepository {
   Cart get currentCart => _myCard;
 
-  void addProduct(Product product) {
+  void addProduct(Product product, {int quantity = 1}) {
     _myCard.cartItems.update(
       product.id,
       (v) {
-        v.quantity += 1;
+        v.quantity += (quantity == 0) ? 1 : quantity;
         return v;
       },
       ifAbsent: () => CartItem(productId: product.id),

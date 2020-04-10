@@ -19,7 +19,10 @@ class _CartBaseEvent extends CartEvent {
 }
 
 class AddProductToCartEvent extends _CartBaseEvent {
-  AddProductToCartEvent({@required Product product}) : super(product: product);
+  final int quantity;
+  AddProductToCartEvent({@required Product product, this.quantity = 1})
+      : assert(quantity > 0),
+        super(product: product);
 
   @override
   String toString() => 'AddProductEvent {product ${product.id}}';

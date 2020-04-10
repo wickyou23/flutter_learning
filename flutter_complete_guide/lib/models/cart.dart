@@ -21,4 +21,11 @@ class Cart {
   double getSumMoney() {
     return cartItems.values.toList().fold(0, (rs, v) => rs += v.getSumMoney());
   }
+
+  CartItem getCartItemByProductId(String productId) {
+    return cartItems.values.firstWhere((v) => v.productId == productId,
+        orElse: () {
+      return null;
+    });
+  }
 }
