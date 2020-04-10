@@ -23,7 +23,11 @@ class LeftMenuDrawerState extends StatelessWidget {
                   child: Text('Home'),
                 ),
                 onPressed: () {
-                  context.navigator.pushReplacementNamed('/');
+                  if (context.route.settings.name == '/') {
+                    context.navigator.pop();
+                  } else {
+                    context.navigator.pushReplacementNamed('/');
+                  }
                 },
               ),
               Divider(
@@ -38,7 +42,13 @@ class LeftMenuDrawerState extends StatelessWidget {
                   child: Text('History'),
                 ),
                 onPressed: () {
-                  context.navigator.pushReplacementNamed('/transaction-history-screen');
+                  if (context.route.settings.name ==
+                      '/transaction-history-screen') {
+                    context.navigator.pop();
+                  } else {
+                    context.navigator
+                        .pushReplacementNamed('/transaction-history-screen');
+                  }
                 },
               ),
               Divider(
