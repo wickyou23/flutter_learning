@@ -15,6 +15,8 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  bool _isPoping = false;
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
@@ -23,7 +25,7 @@ class _CartScreenState extends State<CartScreen> {
           listener: (_, state) {
             if (state is CartReadyState) {
               if (state.cart.cartItems.isEmpty) {
-                context.navigator.pop();
+                _isPoping = context.navigator.pop();
               }
             }
           },
@@ -31,7 +33,14 @@ class _CartScreenState extends State<CartScreen> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Cart'),
+          title: Text(
+            'Cart',
+            style: context.theme.textTheme.title.copyWith(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
         ),
         body: Container(
           color: Colors.grey.withPercentAlpha(0.1),
@@ -70,6 +79,9 @@ class _CartScreenState extends State<CartScreen> {
 
   Widget _cartItemList() {
     return BlocBuilder<CartBloc, CartState>(
+      condition: (pre, cur) {
+        return !_isPoping;
+      },
       builder: (ctx, state) {
         List<CartItem> _cartItem = [];
         if (state is CartReadyState) {
@@ -154,14 +166,21 @@ class _CartScreenState extends State<CartScreen> {
                                   width: 24,
                                   child: IconButton(
                                     padding: EdgeInsets.zero,
-                                    icon: Icon(Icons.add_circle),
+                                    icon: Icon(Icons.remove_circle),
                                     iconSize: 24,
                                     color: context.theme.primaryColor,
-                                    onPressed: () {
-                                      context.bloc<CartBloc>().add(
-                                            AddProductToCartEvent(
-                                                product: item.product),
-                                          );
+                                    onPressed: () async {
+                                      bool allowDelete = true;
+                                      if (item.quantity == 1) {
+                                        allowDelete = await _showAlertConfirm();
+                                      }
+
+                                      if (allowDelete) {
+                                        context.bloc<CartBloc>().add(
+                                              RemoveProductToCartEvent(
+                                                  product: item.product),
+                                            );
+                                      }
                                     },
                                   ),
                                 ),
@@ -195,21 +214,14 @@ class _CartScreenState extends State<CartScreen> {
                                   width: 24,
                                   child: IconButton(
                                     padding: EdgeInsets.zero,
-                                    icon: Icon(Icons.remove_circle),
+                                    icon: Icon(Icons.add_circle),
                                     iconSize: 24,
                                     color: context.theme.primaryColor,
-                                    onPressed: () async {
-                                      bool allowDelete = true;
-                                      if (item.quantity == 1) {
-                                        allowDelete = await _showAlertConfirm();
-                                      }
-
-                                      if (allowDelete) {
-                                        context.bloc<CartBloc>().add(
-                                              RemoveProductToCartEvent(
-                                                  product: item.product),
-                                            );
-                                      }
+                                    onPressed: () {
+                                      context.bloc<CartBloc>().add(
+                                            AddProductToCartEvent(
+                                                product: item.product),
+                                          );
                                     },
                                   ),
                                 ),
@@ -242,6 +254,9 @@ class _CartScreenState extends State<CartScreen> {
 
   Widget _bottomWidget() {
     return BlocBuilder<CartBloc, CartState>(
+      condition: (pre, cur) {
+        return !_isPoping;
+      },
       builder: (ctx, state) {
         if (state is CartReadyState) {
           return Column(

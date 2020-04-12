@@ -8,22 +8,26 @@ class CartRepository {
   Cart get currentCart => _myCard;
 
   void addProduct(Product product, {int quantity = 1}) {
+    final int innerQuantity = (quantity == 0) ? 1 : quantity;
     _myCard.cartItems.update(
       product.id,
       (v) {
-        v.quantity += (quantity == 0) ? 1 : quantity;
+        v.quantity += innerQuantity;
         return v;
       },
-      ifAbsent: () => CartItem(productId: product.id),
+      ifAbsent: () => CartItem(
+        productId: product.id,
+        quantity: innerQuantity,
+      ),
     );
   }
 
-  void removeProduct(Product product) {
+  void removeProduct(Product product, {int quantity = 1}) {
     if (_myCard.cartItems.containsKey(product.id)) {
       _myCard.cartItems.update(
         product.id,
         (v) {
-          v.quantity -= 1;
+          v.quantity -= (quantity == 0) ? 1 : quantity;
           return v;
         },
       );

@@ -29,8 +29,10 @@ class AddProductToCartEvent extends _CartBaseEvent {
 }
 
 class RemoveProductToCartEvent extends _CartBaseEvent {
-  RemoveProductToCartEvent({@required Product product})
-      : super(product: product);
+  final int quantity;
+  RemoveProductToCartEvent({@required Product product, this.quantity = 1})
+      : assert(quantity > 0),
+        super(product: product);
 
   @override
   String toString() => 'RemoveProductEvent {product ${product.id}}';

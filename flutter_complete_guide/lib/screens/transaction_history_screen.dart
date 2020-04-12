@@ -23,7 +23,14 @@ class _TransactionHistoryState extends State<TransactionHistory> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Transaction History'),
+        title: Text(
+          'Transaction History',
+          style: context.theme.textTheme.title.copyWith(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
       ),
       drawer: Drawer(
         child: LeftMenuDrawerState(),
@@ -35,7 +42,13 @@ class _TransactionHistoryState extends State<TransactionHistory> {
             if (state is TransactionReadyState) {
               if (state.transactionHistory.isEmpty) {
                 return Center(
-                  child: Text('Transaction is empty'),
+                  child: Text(
+                    'Transaction is empty',
+                    style: context.theme.textTheme.title.copyWith(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 );
               } else {
                 return ListView.builder(
@@ -54,7 +67,13 @@ class _TransactionHistoryState extends State<TransactionHistory> {
               }
             } else {
               return Center(
-                child: Text('Transaction is empty'),
+                child: Text(
+                  'Transaction is empty',
+                  style: context.theme.textTheme.title.copyWith(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               );
             }
           },

@@ -34,23 +34,30 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   Stream<CartState> _mapToAddProductEvent(AddProductToCartEvent event) async* {
     var crState = state;
     if (crState is CartReadyState) {
-      cartRep.addProduct(event.product);
+      cartRep.addProduct(event.product, quantity: event.quantity);
       yield CartReadyState(cart: cartRep.currentCart.copyWith());
     }
   }
 
-  Stream<CartState> _mapToRemoveProductEvent(RemoveProductToCartEvent event) async* {
+  Stream<CartState> _mapToRemoveProductEvent(
+      RemoveProductToCartEvent event) async* {
     var crState = state;
     if (crState is CartReadyState) {
-      cartRep.removeProduct(event.product);
+      cartRep.removeProduct(event.product, quantity: event.quantity);
+      if (cartRep.currentCart.getCartItemByProductId(event.product.id) == null) {
+        yield RemoveProductState(productId: event.product.id);
+      }
+
       yield CartReadyState(cart: cartRep.currentCart.copyWith());
     }
   }
 
-  Stream<CartState> _mapToForceRemoveProductEvent(ForceRemoveProductToCartEvent event) async* {
+  Stream<CartState> _mapToForceRemoveProductEvent(
+      ForceRemoveProductToCartEvent event) async* {
     var crState = state;
     if (crState is CartReadyState) {
       cartRep.forceRemoveProduct(event.product);
+      yield RemoveProductState(productId: event.product.id);
       yield CartReadyState(cart: cartRep.currentCart.copyWith());
     }
   }

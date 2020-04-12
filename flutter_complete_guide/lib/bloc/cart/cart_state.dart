@@ -21,4 +21,16 @@ class CartReadyState extends CartState {
   String toString() => 'CartReadyState { Cart ${cart.id} }';
 }
 
+class RemoveProductState extends CartState {
+  final String productId;
+
+  RemoveProductState({@required this.productId});
+
+  @override
+  List<Object> get props => [productId];
+
+  @override
+  String toString() => 'RemoveProductState { ProductId $productId }';
+}
+
 class CartClearState extends CartState {}

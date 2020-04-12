@@ -45,9 +45,18 @@ class _TransactionCellState extends State<TransactionCell>
               left: 16,
               right: 0,
             ),
-            title: Text('Payment'),
+            title: Text(
+              'Payment',
+              style: context.theme.textTheme.title.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             subtitle: Text(
               item.createDate.csToString('dd-MM-yyyy HH:mm a'),
+              style: context.theme.textTheme.title.copyWith(
+                fontSize: 14,
+              ),
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,

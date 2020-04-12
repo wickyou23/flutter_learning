@@ -23,19 +23,36 @@ class _ShopScreenState extends State<ShopScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Shop App'),
+        title: Text(
+          'Shop App',
+          style: context.theme.textTheme.title.copyWith(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         actions: <Widget>[
           PopupMenuButton(
             itemBuilder: (_) {
               return [
                 PopupMenuItem<int>(
                   value: 0,
-                  child: Text('All'),
+                  child: Text(
+                    'All',
+                    style: context.theme.textTheme.title.copyWith(
+                      fontSize: 16,
+                    ),
+                  ),
                   height: 40,
                 ),
                 PopupMenuItem<int>(
                   value: 1,
-                  child: Text('Favorite'),
+                  child: Text(
+                    'Favorite',
+                    style: context.theme.textTheme.title.copyWith(
+                      fontSize: 16,
+                    ),
+                  ),
                   height: 40,
                 )
               ];

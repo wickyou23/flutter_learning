@@ -20,7 +20,21 @@ class LeftMenuDrawerState extends StatelessWidget {
                   height: 50,
                   width: double.infinity,
                   alignment: AlignmentDirectional.centerStart,
-                  child: Text('Home'),
+                  child: Row(
+                    children: <Widget>[
+                      Icon(Icons.home),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        'Home',
+                        style: context.theme.textTheme.title.copyWith(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 onPressed: () {
                   if (context.route.settings.name == '/') {
@@ -39,7 +53,21 @@ class LeftMenuDrawerState extends StatelessWidget {
                   height: 50,
                   width: double.infinity,
                   alignment: AlignmentDirectional.centerStart,
-                  child: Text('History'),
+                  child: Row(
+                    children: <Widget>[
+                      Icon(Icons.history),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        'History',
+                        style: context.theme.textTheme.title.copyWith(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 onPressed: () {
                   if (context.route.settings.name ==

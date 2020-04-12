@@ -5,8 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/bloc/cart/cart_bloc.dart';
+import 'package:flutter_complete_guide/bloc/cart/cart_event.dart';
 import 'package:flutter_complete_guide/bloc/cart/cart_state.dart';
+import 'package:flutter_complete_guide/bloc/product/product_bloc.dart';
 import 'package:flutter_complete_guide/bloc/product/product_item/product_item_bloc.dart';
+import 'package:flutter_complete_guide/bloc/product/product_item/product_item_event.dart';
 import 'package:flutter_complete_guide/models/cart_item.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 import 'package:flutter_complete_guide/utils/extension.dart';
@@ -22,11 +25,15 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
   double _heightAppBar = 60;
   double _heightDefaultAppBar = 60;
   bool _isSwitchAppBar = false;
-  int _quantity = 1;
+  int _quantity;
+  CartItem _cartItem;
+  bool get _isAddedToCart => _cartItem != null;
+  bool _isPopping = false;
 
   @override
   void initState() {
     super.initState();
+
     _scrollController.addListener(() {
       final double offset = max(0, _scrollController.offset);
       double appbarOpacity =
@@ -39,29 +46,75 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     });
   }
 
+  void _handleAddProductToCart(Product product, CartItem cartItem) {
+    final isRemoved =
+        cartItem == null ? false : (_quantity < cartItem.quantity);
+    if (_quantity == cartItem?.quantity) {
+      _isPopping = context.navigator.pop();
+      return;
+    }
+
+    if (_quantity == 0) {
+      context.bloc<CartBloc>().add(
+            ForceRemoveProductToCartEvent(product: product),
+          );
+      return;
+    }
+
+    if (isRemoved) {
+      context.bloc<CartBloc>().add(
+            RemoveProductToCartEvent(
+              product: product,
+              quantity: cartItem.quantity - _quantity,
+            ),
+          );
+    } else {
+      context.bloc<CartBloc>().add(
+            AddProductToCartEvent(
+              product: product,
+              quantity: _quantity - (cartItem?.quantity ?? 0),
+            ),
+          );
+    }
+
+    _isPopping = context.navigator.pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     _heightAppBar = context.media.viewPadding.top + _heightDefaultAppBar;
     return BlocProvider.value(
       value: context.routeArg as ProductItemBloc,
       child: BlocBuilder<ProductItemBloc, Product>(
+        condition: (pre, cur) {
+          return !_isPopping;
+        },
         builder: (ctx, state) {
-          return Scaffold(
-            body: Stack(
-              children: [
-                _contentWidget(state),
-                _bottomWidget(state),
-                AnimatedOpacity(
-                  opacity: _isSwitchAppBar ? 1 : 0,
-                  duration: Duration(milliseconds: 200),
-                  child: _mainAppBar(state),
-                ),
-                AnimatedOpacity(
-                  opacity: _isSwitchAppBar ? 0 : 1,
-                  duration: Duration(milliseconds: 200),
-                  child: _subAppBar(state),
-                ),
-              ],
+          return BlocListener<CartBloc, CartState>(
+            listener: (ctx, state) {
+              if (state is RemoveProductState) {
+                if (state.productId == state.productId) {
+                  _isPopping = context.navigator.pop();
+                }
+              }
+            },
+            child: Scaffold(
+              body: Stack(
+                children: [
+                  _contentWidget(state),
+                  _bottomWidget(state),
+                  AnimatedOpacity(
+                    opacity: _isSwitchAppBar ? 1 : 0,
+                    duration: Duration(milliseconds: 200),
+                    child: _mainAppBar(ctx, state),
+                  ),
+                  AnimatedOpacity(
+                    opacity: _isSwitchAppBar ? 0 : 1,
+                    duration: Duration(milliseconds: 200),
+                    child: _subAppBar(ctx, state),
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -69,7 +122,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     );
   }
 
-  Widget _mainAppBar(Product product) {
+  Widget _mainAppBar(BuildContext innerCtx, Product product) {
     return Container(
       key: Key('_mainAppBar_'),
       color: context.theme.primaryColor,
@@ -86,7 +139,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
               color: Colors.white,
               iconSize: 28,
               onPressed: () {
-                context.navigator.pop();
+                _isPopping = context.navigator.pop();
               },
             ),
             Text(
@@ -101,10 +154,16 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
               child: Container(),
             ),
             IconButton(
-              icon: Icon(Icons.favorite_border),
+              icon: Icon(
+                product.isFavorite ? Icons.favorite : Icons.favorite_border,
+              ),
               color: Colors.white,
               iconSize: 28,
-              onPressed: () {},
+              onPressed: () {
+                innerCtx
+                    .bloc<ProductItemBloc>()
+                    .add(SetFavoriteEvent(isFavorite: !product.isFavorite));
+              },
             ),
           ],
         ),
@@ -112,7 +171,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     );
   }
 
-  Widget _subAppBar(Product product) {
+  Widget _subAppBar(BuildContext innerCtx, Product product) {
     return Container(
       key: Key('_subAppBar_'),
       height: _heightAppBar + 16,
@@ -135,7 +194,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
               icon: Icon(Icons.arrow_back_ios),
               color: Colors.white,
               onPressed: () {
-                context.navigator.pop();
+                _isPopping = context.navigator.pop();
               },
             ),
           ),
@@ -154,9 +213,15 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
               color: Colors.grey.withPercentAlpha(0.8),
             ),
             child: IconButton(
-              icon: Icon(Icons.favorite_border),
+              icon: Icon(
+                product.isFavorite ? Icons.favorite : Icons.favorite_border,
+              ),
               color: Colors.white,
-              onPressed: () {},
+              onPressed: () {
+                innerCtx
+                    .bloc<ProductItemBloc>()
+                    .add(SetFavoriteEvent(isFavorite: !product.isFavorite));
+              },
             ),
           ),
         ],
@@ -166,11 +231,25 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
 
   Widget _bottomWidget(Product product) {
     return BlocBuilder<CartBloc, CartState>(
+      condition: (pre, cur) {
+        return !_isPopping;
+      },
       builder: (ctx, state) {
-        CartItem cartItem;
         if (state is CartReadyState) {
-          cartItem = state.cart.getCartItemByProductId(product.id);
-          _quantity = cartItem?.quantity ?? 1;
+          _cartItem = state.cart.getCartItemByProductId(product.id);
+        }
+
+        if (_quantity == null) {
+          _quantity = _cartItem?.quantity ?? 1;
+        }
+
+        final double money = _quantity.toDouble() * product.price;
+        final bool isRemoved = _quantity == 0;
+        String titleButton = _isAddedToCart
+            ? 'UPDATE TO CART - \$${money.toStringAsFixed(2)}'
+            : 'ADD TO CART - \$${money.toStringAsFixed(2)}';
+        if (isRemoved) {
+          titleButton = 'REMOVE TO CART';
         }
 
         return Column(
@@ -211,10 +290,18 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                           color: context.theme.primaryColor,
                           iconSize: 35,
                           onPressed: () {
-                            if (_quantity != 1) {
-                              setState(() {
-                                _quantity -= 1;
-                              });
+                            if (_isAddedToCart) {
+                              if (_quantity != 0) {
+                                setState(() {
+                                  _quantity -= 1;
+                                });
+                              }
+                            } else {
+                              if (_quantity != 1) {
+                                setState(() {
+                                  _quantity -= 1;
+                                });
+                              }
                             }
                           },
                         ),
@@ -248,15 +335,19 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                     height: 45,
                     child: RaisedButton(
                       child: Text(
-                        'ADD TO CART - \$${(_quantity.toDouble() * product.price).toStringAsFixed(2)}',
+                        titleButton,
                         style: context.theme.textTheme.title.copyWith(
                           fontSize: 16,
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      color: context.theme.primaryColor,
-                      onPressed: () {},
+                      color: isRemoved
+                          ? Colors.redAccent
+                          : context.theme.primaryColor,
+                      onPressed: () {
+                        _handleAddProductToCart(product, _cartItem);
+                      },
                     ),
                   ),
                 ],
