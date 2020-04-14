@@ -1,5 +1,8 @@
-import 'package:intl/intl.dart';
+import 'dart:math';
+
+import 'package:intl/intl.dart' as intl;
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 extension BuildContextExt on BuildContext {
   ThemeData get theme {
@@ -21,11 +24,19 @@ extension BuildContextExt on BuildContext {
   Object get routeArg {
     return this.route.settings.arguments;
   }
+
+  bool get isSmallDevice {
+    return this.media.size.height < 600;
+  }
+
+  double get scaleDevice {
+    return this.isSmallDevice ? 0.8 : 1.0;
+  }
 }
 
 extension DateTimeExt on DateTime {
   String csToString(String formatString) {
-    var format = DateFormat(formatString);
+    var format = intl.DateFormat(formatString);
     return format.format(this);
   }
 
@@ -81,5 +92,31 @@ extension ColorExt on Color {
     }
 
     return this.withAlpha((255 * percent).toInt());
+  }
+
+  static Color colorWithHex(int hexColor) {
+    return Color.fromARGB(
+      0xFF,
+      (hexColor >> 16) & 0xFF,
+      (hexColor >> 8) & 0xFF,
+      hexColor & 0xFF,
+    );
+  }
+}
+
+extension TextExt on Text {
+  Size get textSize {
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(text: this.data, style: this.style),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    )..layout(minWidth: 0, maxWidth: double.infinity);
+    return textPainter.size;
+  }
+}
+
+extension DoubleExt on double {
+  double toRadian() {
+    return (this * pi) / 180;
   }
 }

@@ -8,12 +8,12 @@ import 'package:flutter_complete_guide/screens/left_menu_drawer.dart';
 import 'package:flutter_complete_guide/utils/extension.dart';
 import 'package:flutter_complete_guide/widgets/transaction_cell.dart';
 
-class TransactionHistory extends StatefulWidget {
+class TransactionHistoryScreen extends StatefulWidget {
   @override
-  _TransactionHistoryState createState() => _TransactionHistoryState();
+  _TransactionHistoryScreenState createState() => _TransactionHistoryScreenState();
 }
 
-class _TransactionHistoryState extends State<TransactionHistory> {
+class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   @override
   void initState() {
     super.initState();
@@ -33,7 +33,7 @@ class _TransactionHistoryState extends State<TransactionHistory> {
         ),
       ),
       drawer: Drawer(
-        child: LeftMenuDrawerState(),
+        child: LeftMenuDrawer(),
       ),
       body: Container(
         color: Colors.grey.withPercentAlpha(0.1),
