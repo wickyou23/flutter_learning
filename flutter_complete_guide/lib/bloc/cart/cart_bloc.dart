@@ -80,7 +80,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     if (crState is CartReadyState) {
       var productIdsRemoved = cartRep.validateCartItem();
       var isEmptyCart = cartRep.currentCart.cartItems.isEmpty;
-      yield ValidateCartState(productIdsRemoved: productIdsRemoved, isEmptyCart: isEmptyCart);
+      yield ValidateCartDoneState(productsNameRemoved: productIdsRemoved, isEmptyCart: isEmptyCart);
       if (!isEmptyCart) {
         yield CartReadyState(cart: cartRep.currentCart.copyWith());
       }

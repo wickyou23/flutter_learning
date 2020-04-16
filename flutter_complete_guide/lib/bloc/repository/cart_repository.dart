@@ -18,6 +18,7 @@ class CartRepository {
       },
       ifAbsent: () => CartItem(
         productId: product.id,
+        productName: product.title,
         quantity: innerQuantity,
       ),
     );
@@ -44,18 +45,22 @@ class CartRepository {
   List<String> validateCartItem() {
     ProductRepository productRep = ProductRepository();
     List<String> cartItemRemoved = List<String>();
+    List<String> cartNameRemoved = List<String>();
     for (String productId in _myCard.cartItems.keys.toList()) {
       var findProduct = productRep.getProductById(productId);
       if (findProduct == null) {
         cartItemRemoved.add(productId);
+        cartNameRemoved.add(_myCard.cartItems[productId].productName);
+      } else {
+        _myCard.cartItems[productId].product = findProduct;
       }
     }
-    
+
     if (cartItemRemoved.isNotEmpty) {
       _myCard.cartItems.removeWhere((k, v) => cartItemRemoved.contains(k));
     }
 
-    return cartItemRemoved;
+    return cartNameRemoved;
   }
 
   void clear() {

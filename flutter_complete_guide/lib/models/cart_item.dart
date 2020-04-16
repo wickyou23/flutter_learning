@@ -4,31 +4,32 @@ import 'package:flutter_complete_guide/models/product.dart';
 
 class CartItem {
   final String productId;
+  final String productName;
   int quantity;
-  Product _product;
+  Product product;
 
   CartItem({
     @required this.productId,
+    this.productName = '',
     this.quantity = 1,
-  });
+  }) {
+    this.product = _getProductById(this.productId);
+  }
 
   CartItem copyWith({
-    @required String productId,
+    String productName,
     int quantity,
   }) {
     return CartItem(
-      productId: productId,
-      quantity: quantity ?? 1,
+      productId: this.productId,
+      productName: productName ?? this.productName,
+      quantity: quantity ?? this.quantity,
     );
   }
 
-  Product get product {
-    if (_product == null) {
-      final ProductRepository productRep = ProductRepository();
-      _product = productRep.getProductById(productId);
-    }
-
-    return _product;
+  Product _getProductById(String productId) {
+    final ProductRepository productRep = ProductRepository();
+    return productRep.getProductById(productId);
   }
 
   double getSumMoney() {
