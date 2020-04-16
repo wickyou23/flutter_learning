@@ -46,4 +46,8 @@ class ForceRemoveProductToCartEvent extends _CartBaseEvent {
   String toString() => 'ForceRemoveProductEvent {product ${product.id}}';
 }
 
+class ValidateCartEvent extends CartEvent {}
+
+class GetCurrentCartEvent extends CartEvent {}
+
 class ClearCardEvent extends CartEvent {}

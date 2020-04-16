@@ -33,4 +33,18 @@ class RemoveProductState extends CartState {
   String toString() => 'RemoveProductState { ProductId $productId }';
 }
 
+class ValidateCartState extends CartState {
+  final List<String> productIdsRemoved;
+  final bool isEmptyCart;
+
+  ValidateCartState({this.productIdsRemoved, this.isEmptyCart});
+
+  @override
+  List<Object> get props => [productIdsRemoved, isEmptyCart];
+
+  @override
+  String toString() =>
+      'ValidateCartState { ProductId $productIdsRemoved - isEmptyCart $isEmptyCart}';
+}
+
 class CartClearState extends CartState {}

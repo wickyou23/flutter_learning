@@ -15,6 +15,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       yield* _mapToFilterFavoriteEvent();
     } else if (event is ProductFilterAllEvent) {
       yield* _mapToFilterAllEvent();
+    } else if (event is AddNewProductEvent) {
+      yield* _mapToAddNewProductEvent(event);
+    } else if (event is UpdateProductEvent) {
+      yield* _mapToUpdateProductEvent(event);
+    } else if (event is DeleteProductEvent) {
+      yield* _mapToDeleteProductEvent(event);
     }
   }
 
@@ -40,5 +46,46 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       products: productRepository.getAllProduct,
       isFavoriteFilter: false,
     );
+  }
+
+  Stream<ProductState> _mapToAddNewProductEvent(
+      AddNewProductEvent event) async* {
+    var crState = state;
+    if (crState is ProductLoadedState) {
+      yield AddingNewProductState();
+      productRepository.addNewProduct(event.newProduct);
+      yield AddedNewProductState();
+      yield ProductLoadedState(
+        products: productRepository.getAllProduct,
+        isFavoriteFilter: crState.isFavoriteFilter,
+      );
+    }
+  }
+
+  Stream<ProductState> _mapToUpdateProductEvent(
+      UpdateProductEvent event) async* {
+    var crState = state;
+    if (crState is ProductLoadedState) {
+      yield UpdatingProductState();
+      productRepository.updateProduct(event.product);
+      yield UpdatedProductState();
+      yield ProductLoadedState(
+        products: productRepository.getAllProduct,
+        isFavoriteFilter: crState.isFavoriteFilter,
+      );
+    }
+  }
+
+  Stream<ProductState> _mapToDeleteProductEvent(DeleteProductEvent event) async* {
+    var crState = state;
+    if (crState is ProductLoadedState) {
+      yield DeletingProductState();
+      productRepository.deleteProduct(event.productId);
+      yield DeletedProductState();
+      yield ProductLoadedState(
+        products: productRepository.getAllProduct,
+        isFavoriteFilter: crState.isFavoriteFilter,
+      );
+    }
   }
 }

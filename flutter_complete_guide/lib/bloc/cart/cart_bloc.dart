@@ -22,6 +22,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       yield* _mapToForceRemoveProductEvent(event);
     } else if (event is ClearCardEvent) {
       yield* _mapToClearCartEvent();
+    } else if (event is ValidateCartEvent) {
+      yield* _mapToValidateCartEvent();
+    } else if (event is GetCurrentCartEvent) {
+      yield CartReadyState(cart: cartRep.currentCart);
     }
   }
 
@@ -44,7 +48,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     var crState = state;
     if (crState is CartReadyState) {
       cartRep.removeProduct(event.product, quantity: event.quantity);
-      if (cartRep.currentCart.getCartItemByProductId(event.product.id) == null) {
+      if (cartRep.currentCart.getCartItemByProductId(event.product.id) ==
+          null) {
         yield RemoveProductState(productId: event.product.id);
       }
 
@@ -67,6 +72,18 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     if (crState is CartReadyState) {
       cartRep.clear();
       yield CartReadyState(cart: cartRep.currentCart.copyWith());
+    }
+  }
+
+  Stream<CartState> _mapToValidateCartEvent() async* {
+    var crState = state;
+    if (crState is CartReadyState) {
+      var productIdsRemoved = cartRep.validateCartItem();
+      var isEmptyCart = cartRep.currentCart.cartItems.isEmpty;
+      yield ValidateCartState(productIdsRemoved: productIdsRemoved, isEmptyCart: isEmptyCart);
+      if (!isEmptyCart) {
+        yield CartReadyState(cart: cartRep.currentCart.copyWith());
+      }
     }
   }
 }

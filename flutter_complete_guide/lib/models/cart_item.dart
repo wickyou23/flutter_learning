@@ -32,6 +32,6 @@ class CartItem {
   }
 
   double getSumMoney() {
-    return product.price * quantity;
+    return (product?.price ?? 0) * quantity;
   }
 }

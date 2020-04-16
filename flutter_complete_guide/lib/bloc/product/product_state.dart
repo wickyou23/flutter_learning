@@ -24,3 +24,15 @@ class ProductLoadedState extends ProductState {
   @override
   String toString() => 'ProductLoaded { todos: $products }';
 }
+
+class AddingNewProductState extends ProductState {}
+
+class AddedNewProductState extends ProductState {}
+
+class UpdatingProductState extends ProductState {}
+
+class UpdatedProductState extends ProductState {}
+
+class DeletingProductState extends ProductState {}
+
+class DeletedProductState extends ProductState {}

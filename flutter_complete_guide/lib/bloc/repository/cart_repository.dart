@@ -1,3 +1,4 @@
+import 'package:flutter_complete_guide/bloc/repository/product_repository.dart';
 import 'package:flutter_complete_guide/models/cart.dart';
 import 'package:flutter_complete_guide/models/cart_item.dart';
 import 'package:flutter_complete_guide/models/product.dart';
@@ -38,6 +39,23 @@ class CartRepository {
 
   void forceRemoveProduct(Product product) {
     _myCard.cartItems.removeWhere((k, v) => k == product.id);
+  }
+
+  List<String> validateCartItem() {
+    ProductRepository productRep = ProductRepository();
+    List<String> cartItemRemoved = List<String>();
+    for (String productId in _myCard.cartItems.keys.toList()) {
+      var findProduct = productRep.getProductById(productId);
+      if (findProduct == null) {
+        cartItemRemoved.add(productId);
+      }
+    }
+    
+    if (cartItemRemoved.isNotEmpty) {
+      _myCard.cartItems.removeWhere((k, v) => cartItemRemoved.contains(k));
+    }
+
+    return cartItemRemoved;
   }
 
   void clear() {

@@ -5,12 +5,14 @@ import 'package:flutter_complete_guide/bloc/product/product_bloc.dart';
 import 'package:flutter_complete_guide/bloc/repository/product_repository.dart';
 import 'package:flutter_complete_guide/bloc/repository/transaction_repository.dart';
 import 'package:flutter_complete_guide/bloc/transaction/transaction_bloc.dart';
+import 'package:flutter_complete_guide/models/product.dart';
 import 'package:flutter_complete_guide/screens/cart_screen.dart';
 import 'package:flutter_complete_guide/screens/edit_product_screen.dart';
 import 'package:flutter_complete_guide/screens/product_managed_screen.dart';
 import 'package:flutter_complete_guide/screens/shop_detail_screen.dart';
 import 'package:flutter_complete_guide/screens/shop_screen.dart';
 import 'package:flutter_complete_guide/screens/transaction_history_screen.dart';
+import 'package:flutter_complete_guide/utils/extension.dart';
 
 class AppWireFrame {
   static final Map<String, WidgetBuilder> routes = {
@@ -36,11 +38,12 @@ class AppWireFrame {
           ),
           child: ProductManagedScreen(),
         ),
-    '/edit-product-managed-creen': (ctx) => BlocProvider(
-          create: (_) => ProductBloc(
-            productRepository: ProductRepository(),
-          ),
-          child: EditProductScreen(),
-        ),
+    '/edit-product-creen': (ctx) {
+      Map<String, Object> args = ctx.routeArg as Map<String, Object>;
+      return BlocProvider.value(
+        value: args['bloc'] as ProductBloc,
+        child: EditProductScreen(crProduct: args['product'] as Product),
+      );
+    },
   };
 }

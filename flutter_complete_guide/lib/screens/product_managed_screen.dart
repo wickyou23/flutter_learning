@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/bloc/product/product_bloc.dart';
+import 'package:flutter_complete_guide/bloc/product/product_event.dart';
 import 'package:flutter_complete_guide/bloc/product/product_state.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 import 'package:flutter_complete_guide/screens/left_menu_drawer.dart';
@@ -21,7 +22,8 @@ class _ProductManagedScreenState extends State<ProductManagedScreen> {
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              context.navigator.pushNamed('/edit-product-managed-creen');
+              context.navigator.pushNamed('/edit-product-creen',
+                  arguments: {'bloc': context.bloc<ProductBloc>()});
             },
           )
         ],
@@ -32,6 +34,9 @@ class _ProductManagedScreenState extends State<ProductManagedScreen> {
       body: Container(
         padding: const EdgeInsets.only(top: 10),
         child: BlocBuilder<ProductBloc, ProductState>(
+          condition: (ctx, state) {
+            return (state is ProductLoadedState);
+          },
           builder: (ctx, state) {
             List<Product> products = [];
             if (state is ProductLoadedState) {
@@ -81,7 +86,14 @@ class _ProductManagedScreenState extends State<ProductManagedScreen> {
                             child: IconButton(
                               icon: Icon(Icons.edit),
                               color: context.theme.primaryColor,
-                              onPressed: () {},
+                              onPressed: () {
+                                context.navigator.pushNamed(
+                                    '/edit-product-creen',
+                                    arguments: {
+                                      'bloc': context.bloc<ProductBloc>(),
+                                      'product': item,
+                                    });
+                              },
                             ),
                           ),
                           Container(
@@ -89,7 +101,14 @@ class _ProductManagedScreenState extends State<ProductManagedScreen> {
                             child: IconButton(
                               icon: Icon(Icons.delete),
                               color: Colors.redAccent,
-                              onPressed: () {},
+                              onPressed: () async {
+                                var isRemove = await context.showAlertConfirm();
+                                if (isRemove) {
+                                  context.bloc<ProductBloc>().add(
+                                        DeleteProductEvent(productId: item.id),
+                                      );
+                                }
+                              },
                             ),
                           ),
                         ],

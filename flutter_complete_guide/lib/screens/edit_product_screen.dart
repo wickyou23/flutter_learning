@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/bloc/product/product_bloc.dart';
+import 'package:flutter_complete_guide/bloc/product/product_event.dart';
+import 'package:flutter_complete_guide/bloc/product/product_state.dart';
+import 'package:flutter_complete_guide/models/product.dart';
 import 'package:flutter_complete_guide/utils/extension.dart';
+import 'package:uuid/uuid.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EditProductScreen extends StatefulWidget {
+  final Product crProduct;
+
+  EditProductScreen({this.crProduct});
+
   @override
   _EditProductScreenState createState() => _EditProductScreenState();
 }
@@ -15,6 +25,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+
+  @override
+  void initState() {
+    if (widget.crProduct != null) {
+      _titleController.text = widget.crProduct?.title ?? '';
+      _priceController.text = widget.crProduct?.price?.toStringAsFixed(2) ?? '';
+      _descriptionController.text = widget.crProduct?.description ?? '';
+      _imageUrl = widget.crProduct?.imageUrl ?? '';
+    }
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -35,7 +57,30 @@ class _EditProductScreenState extends State<EditProductScreen> {
       return;
     }
 
-    if (_mainForm.currentState.validate()) {}
+    if (_mainForm.currentState.validate()) {
+      if (widget.crProduct == null) {
+        Product newProduct = Product(
+          id: Uuid().v1(),
+          title: _titleController.text,
+          price: double.parse(_priceController.text),
+          description: _descriptionController.text,
+          imageUrl: _imageUrl,
+        );
+        context.bloc<ProductBloc>().add(
+              AddNewProductEvent(newProduct: newProduct),
+            );
+      } else {
+        Product newProduct = widget.crProduct.copyWith(
+          title: _titleController.text,
+          price: double.parse(_priceController.text),
+          description: _descriptionController.text,
+          imageUrl: _imageUrl,
+        );
+        context.bloc<ProductBloc>().add(
+              UpdateProductEvent(product: newProduct),
+            );
+      }
+    }
   }
 
   @override
@@ -52,122 +97,143 @@ class _EditProductScreenState extends State<EditProductScreen> {
           )
         ],
       ),
-      body: Container(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _mainForm,
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Flexible(
-                        flex: 1,
-                        child: _imageWidget(),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Flexible(
-                        flex: 2,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            TextFormField(
-                              controller: _titleController,
-                              focusNode: _titleFocus,
-                              textInputAction: TextInputAction.next,
-                              style: context.theme.textTheme.title.copyWith(
-                                fontSize: 18,
-                              ),
-                              decoration: InputDecoration(
-                                hintText: 'Title',
-                                border: const OutlineInputBorder(),
-                                contentPadding: const EdgeInsets.only(
-                                  top: 14,
-                                  bottom: 14,
-                                  right: 10,
-                                  left: 10,
-                                ),
-                                hintStyle:
-                                    context.theme.textTheme.title.copyWith(
-                                  fontSize: 18,
-                                ),
-                              ),
-                              onFieldSubmitted: (_) {
-                                FocusScope.of(context)
-                                    .requestFocus(_priceFocus);
-                              },
-                            ),
-                            SizedBox(
-                              height: 16,
-                            ),
-                            TextFormField(
-                              controller: _priceController,
-                              focusNode: _priceFocus,
-                              keyboardType: TextInputType.number,
-                              style: context.theme.textTheme.title.copyWith(
-                                fontSize: 18,
-                              ),
-                              decoration: InputDecoration(
-                                hintText: 'Price',
-                                border: const OutlineInputBorder(),
-                                contentPadding: const EdgeInsets.only(
-                                  top: 14,
-                                  bottom: 14,
-                                  right: 10,
-                                  left: 10,
-                                ),
-                                hintStyle:
-                                    context.theme.textTheme.title.copyWith(
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                          ],
+      body: BlocListener<ProductBloc, ProductState>(
+        listener: (ctx, state) {
+          if (state is AddedNewProductState || state is UpdatedProductState) {
+            context.navigator.pop();
+          }
+        },
+        child: Container(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _mainForm,
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Flexible(
+                          flex: 1,
+                          child: _imageWidget(),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  TextFormField(
-                    maxLines: 5,
-                    controller: _descriptionController,
-                    focusNode: _descriptionFocus,
-                    textInputAction: TextInputAction.done,
-                    style: context.theme.textTheme.title.copyWith(
-                      fontSize: 18,
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Flexible(
+                          flex: 2,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              TextFormField(
+                                controller: _titleController,
+                                focusNode: _titleFocus,
+                                textInputAction: TextInputAction.next,
+                                style: context.theme.textTheme.title.copyWith(
+                                  fontSize: 18,
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: 'Title',
+                                  border: const OutlineInputBorder(),
+                                  contentPadding: const EdgeInsets.only(
+                                    top: 14,
+                                    bottom: 14,
+                                    right: 10,
+                                    left: 10,
+                                  ),
+                                  hintStyle:
+                                      context.theme.textTheme.title.copyWith(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                onFieldSubmitted: (_) {
+                                  FocusScope.of(context)
+                                      .requestFocus(_priceFocus);
+                                },
+                                validator: (string) {
+                                  if (string.isEmpty) {
+                                    return 'Please enter a product name';
+                                  }
+
+                                  return null;
+                                },
+                              ),
+                              SizedBox(
+                                height: 16,
+                              ),
+                              TextFormField(
+                                controller: _priceController,
+                                focusNode: _priceFocus,
+                                keyboardType: TextInputType.number,
+                                style: context.theme.textTheme.title.copyWith(
+                                  fontSize: 18,
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: 'Price',
+                                  border: const OutlineInputBorder(),
+                                  contentPadding: const EdgeInsets.only(
+                                    top: 14,
+                                    bottom: 14,
+                                    right: 10,
+                                    left: 10,
+                                  ),
+                                  hintStyle:
+                                      context.theme.textTheme.title.copyWith(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                validator: (string) {
+                                  if (double.tryParse(string) == null) {
+                                    return 'The price is invalid';
+                                  }
+
+                                  return null;
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    decoration: InputDecoration(
-                      hintText: 'Description...',
-                      border: const OutlineInputBorder(),
-                      contentPadding: const EdgeInsets.only(
-                        top: 16,
-                        bottom: 16,
-                        right: 10,
-                        left: 10,
-                      ),
-                      hintStyle: context.theme.textTheme.title.copyWith(
+                    SizedBox(
+                      height: 16,
+                    ),
+                    TextFormField(
+                      maxLines: 5,
+                      controller: _descriptionController,
+                      focusNode: _descriptionFocus,
+                      textInputAction: TextInputAction.done,
+                      style: context.theme.textTheme.title.copyWith(
                         fontSize: 18,
                       ),
-                    ),
-                    validator: (string) {
-                      if (string.length < 10) {
-                        return 'Description must be greater than 10 character';
-                      }
+                      decoration: InputDecoration(
+                        hintText: 'Description...',
+                        border: const OutlineInputBorder(),
+                        contentPadding: const EdgeInsets.only(
+                          top: 16,
+                          bottom: 16,
+                          right: 10,
+                          left: 10,
+                        ),
+                        hintStyle: context.theme.textTheme.title.copyWith(
+                          fontSize: 18,
+                        ),
+                      ),
+                      validator: (string) {
+                        if (string.length < 10) {
+                          return 'The description must be greater than 10 character';
+                        }
 
-                      return null;
-                    },
-                    onFieldSubmitted: (_) {
-                      _handleAddProduct();
-                    },
-                  ),
-                ],
+                        return null;
+                      },
+                      onFieldSubmitted: (_) {
+                        _handleAddProduct();
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -190,10 +256,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   icon: Icon(Icons.add_a_photo),
                   color: context.theme.primaryColor,
                   onPressed: () {
-                    _showTextFieldAlert().then((value) {
-                      setState(() {
-                        _imageUrl = value;
-                      });
+                    _showImageUrlPopup().then((value) {
+                      _imageUrl = value;
                     });
                   },
                 )
@@ -201,12 +265,43 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   _imageUrl,
                   fit: BoxFit.cover,
                   frameBuilder: (_, child, frame, wasSynchronouslyLoaded) {
+                    final imageChild = Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        child,
+                        Container(
+                          alignment: AlignmentDirectional.bottomCenter,
+                          child: Container(
+                            height: 35,
+                            width: double.infinity,
+                            color: Colors.black.withPercentAlpha(0.7),
+                            child: FlatButton(
+                              padding: EdgeInsets.zero,
+                              child: Text(
+                                'Change',
+                                style: context.theme.textTheme.title.copyWith(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              onPressed: () {
+                                _showImageUrlPopup(imageUrl: _imageUrl)
+                                    .then((val) {
+                                  _imageUrl = val;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+
                     if (wasSynchronouslyLoaded) {
-                      return child;
+                      return imageChild;
                     }
 
                     return AnimatedOpacity(
-                      child: child,
+                      child: imageChild,
                       opacity: frame == null ? 0 : 1,
                       duration: const Duration(seconds: 1),
                       curve: Curves.easeOut,
@@ -234,15 +329,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
   }
 
-  Future<String> _showTextFieldAlert() {
+  Future<String> _showImageUrlPopup({String imageUrl}) {
     return showDialog<String>(
+      barrierDismissible: false,
       context: context,
       builder: (ctx) {
         final textFieldUrl = TextEditingController();
+        textFieldUrl.text = imageUrl ?? '';
         final GlobalKey<FormState> imageUrlForm = GlobalKey<FormState>();
 
         return AlertDialog(
-          title: Text('Image Url'),
+          title: Text(
+            'Image Url',
+            style: context.theme.textTheme.title.copyWith(fontSize: 20),
+          ),
           content: Container(
             width: context.media.size.width,
             child: Form(
@@ -279,7 +379,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 ),
               ),
               onPressed: () {
-                context.navigator.pop('');
+                context.navigator.pop(imageUrl ?? '');
               },
             ),
             FlatButton(

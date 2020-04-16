@@ -49,6 +49,21 @@ class ProductRepository {
   }
 
   Product getProductById(String productId) {
-    return _dummyData.firstWhere((v) => v.id == productId);
+    return _dummyData.firstWhere((v) => v.id == productId, orElse: () => null);
+  }
+
+  void addNewProduct(Product newProduct) {
+    _dummyData.add(newProduct);
+  }
+
+  void updateProduct(Product product) {
+    var idx = _dummyData.indexWhere((v) => v.id == product.id);
+    if (idx != null) {
+      _dummyData[idx] = product;
+    }
+  }
+
+  void deleteProduct(String productId) {
+    _dummyData.removeWhere((v) => v.id == productId);
   }
 }

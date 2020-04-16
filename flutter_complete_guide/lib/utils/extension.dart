@@ -32,6 +32,111 @@ extension BuildContextExt on BuildContext {
   double get scaleDevice {
     return this.isSmallDevice ? 0.8 : 1.0;
   }
+
+  Future<bool> showAlertConfirm({String message}) {
+    return showDialog<bool>(
+      barrierDismissible: false,
+      context: this,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Container(
+            height: 50,
+            width: this.media.size.width,
+            color: Colors.redAccent,
+            alignment: AlignmentDirectional.centerStart,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              children: <Widget>[
+                Icon(
+                  Icons.warning,
+                  color: Colors.white,
+                ),
+                SizedBox(
+                  width: 8,
+                ),
+                Text(
+                  'Confirm',
+                  style: this.theme.textTheme.title.copyWith(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                ),
+              ],
+            ),
+          ),
+          titlePadding: EdgeInsets.zero,
+          content: Text(
+            message ?? 'Do you to remove this item?',
+            style: this.theme.textTheme.title.copyWith(
+                  fontSize: 20,
+                ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                'CANCEL',
+                style: this.theme.textTheme.title.copyWith(
+                      fontSize: 15,
+                      color: this.theme.primaryColor,
+                    ),
+              ),
+              onPressed: () {
+                this.navigator.pop(false);
+              },
+            ),
+            RaisedButton(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              color: Colors.redAccent,
+              child: Text(
+                'DELETE',
+                style: this.theme.textTheme.title.copyWith(
+                      fontSize: 15,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              onPressed: () {
+                this.navigator.pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool> showAlert({String message}) {
+    return showDialog<bool>(
+      barrierDismissible: false,
+      context: this,
+      builder: (ctx) {
+        return AlertDialog(
+          titlePadding: EdgeInsets.zero,
+          content: Text(
+            message,
+            style: this.theme.textTheme.title.copyWith(
+                  fontSize: 20,
+                ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                'OK',
+                style: this.theme.textTheme.title.copyWith(
+                      fontSize: 15,
+                      color: this.theme.primaryColor,
+                    ),
+              ),
+              onPressed: () {
+                this.navigator.pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 extension DateTimeExt on DateTime {
