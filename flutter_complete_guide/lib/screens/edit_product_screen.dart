@@ -99,7 +99,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
           IconButton(
             icon: Icon(Icons.done),
             onPressed: () {
-              _handleAddProduct();
+              // _handleAddProduct();
+              context.showLoadingAlert(message: 'Adding product...');
             },
           )
         ],

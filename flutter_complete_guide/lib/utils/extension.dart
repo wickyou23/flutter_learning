@@ -140,14 +140,17 @@ extension BuildContextExt on BuildContext {
 
   Future<bool> showLoadingAlert({String message}) {
     return showDialog<bool>(
-      // barrierDismissible: false,
+      barrierDismissible: false,
       context: this,
       builder: (ctx) {
-        return AlertDialog(
-          contentPadding: const EdgeInsets.only(top: 20, bottom: 16),
-          titlePadding: EdgeInsets.zero,
-          content: Container(
-            child: Column(
+        return WillPopScope(
+          onWillPop: () async {
+            return false;
+          },
+          child: AlertDialog(
+            contentPadding: const EdgeInsets.only(top: 20, bottom: 16),
+            titlePadding: EdgeInsets.zero,
+            content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
