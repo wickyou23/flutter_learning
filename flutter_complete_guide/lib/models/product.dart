@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
 class Product {
@@ -33,5 +35,16 @@ class Product {
       imageUrl: imageUrl ?? this.imageUrl,
       isFavorite: isFavorite ?? this.isFavorite,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': this.id,
+      'title': this.title,
+      'description': this.description,
+      'price': this.price,
+      'imageUrl': this.imageUrl,
+      'isFavorite': this.isFavorite,
+    };
   }
 }

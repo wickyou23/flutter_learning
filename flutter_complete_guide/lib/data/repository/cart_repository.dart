@@ -1,4 +1,4 @@
-import 'package:flutter_complete_guide/bloc/repository/product_repository.dart';
+import 'package:flutter_complete_guide/data/repository/product_repository.dart';
 import 'package:flutter_complete_guide/models/cart.dart';
 import 'package:flutter_complete_guide/models/cart_item.dart';
 import 'package:flutter_complete_guide/models/product.dart';

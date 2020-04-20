@@ -137,6 +137,41 @@ extension BuildContextExt on BuildContext {
       },
     );
   }
+
+  Future<bool> showLoadingAlert({String message}) {
+    return showDialog<bool>(
+      // barrierDismissible: false,
+      context: this,
+      builder: (ctx) {
+        return AlertDialog(
+          contentPadding: const EdgeInsets.only(top: 20, bottom: 16),
+          titlePadding: EdgeInsets.zero,
+          content: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  height: 50,
+                  width: 50,
+                  child: CircularProgressIndicator(),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  message,
+                  style: this.theme.textTheme.title.copyWith(
+                        fontSize: 17,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
 extension DateTimeExt on DateTime {

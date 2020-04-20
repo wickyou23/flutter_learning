@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_complete_guide/data/network_common.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 
 abstract class ProductState extends Equatable {
@@ -28,6 +29,18 @@ class ProductLoadedState extends ProductState {
 class AddingNewProductState extends ProductState {}
 
 class AddedNewProductState extends ProductState {}
+
+class AddFailedNewProductState extends ProductState {
+  final ResponseFailedState failedState;
+
+  AddFailedNewProductState({@required this.failedState});
+
+  @override
+  List<Object> get props => [failedState];
+
+  @override
+  String toString() => 'AddFailedNewProductState { failed: $failedState }';
+}
 
 class UpdatingProductState extends ProductState {}
 

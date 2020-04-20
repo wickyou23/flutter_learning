@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/bloc/cart/cart_bloc.dart';
-import 'package:flutter_complete_guide/bloc/repository/cart_repository.dart';
+import 'package:flutter_complete_guide/data/repository/cart_repository.dart';
 import 'package:flutter_complete_guide/wireframe.dart';
 import 'bloc/simple_bloc_delegate.dart';
 

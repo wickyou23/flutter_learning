@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_complete_guide/bloc/cart/cart_event.dart';
 import 'package:flutter_complete_guide/bloc/cart/cart_state.dart';
-import 'package:flutter_complete_guide/bloc/repository/cart_repository.dart';
+import 'package:flutter_complete_guide/data/repository/cart_repository.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
   final CartRepository cartRep;

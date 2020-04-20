@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/bloc/cart/cart_bloc.dart';
 import 'package:flutter_complete_guide/bloc/cart/cart_event.dart';
-import 'package:flutter_complete_guide/bloc/repository/transaction_repository.dart';
+import 'package:flutter_complete_guide/data/repository/transaction_repository.dart';
 import 'package:flutter_complete_guide/bloc/transaction/transaction_event.dart';
 import 'package:flutter_complete_guide/bloc/transaction/transaction_state.dart';
 

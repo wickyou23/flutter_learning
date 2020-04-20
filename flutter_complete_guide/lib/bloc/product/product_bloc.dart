@@ -2,7 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_complete_guide/bloc/product/product_event.dart';
 import 'package:flutter_complete_guide/bloc/product/product_state.dart';
-import 'package:flutter_complete_guide/bloc/repository/product_repository.dart';
+import 'package:flutter_complete_guide/data/network_common.dart';
+import 'package:flutter_complete_guide/data/repository/product_repository.dart';
 
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final ProductRepository productRepository;
@@ -53,8 +54,14 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     var crState = state;
     if (crState is ProductLoadedState) {
       yield AddingNewProductState();
-      productRepository.addNewProduct(event.newProduct);
-      yield AddedNewProductState();
+      var response = await productRepository.addNewProduct(event.newProduct);
+      if (response is ResponseSuccessState) {
+        yield AddedNewProductState();
+      } else {
+        yield AddFailedNewProductState(
+            failedState: response as ResponseFailedState);
+      }
+
       yield ProductLoadedState(
         products: productRepository.getAllProduct,
         isFavoriteFilter: crState.isFavoriteFilter,
@@ -76,7 +83,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     }
   }
 
-  Stream<ProductState> _mapToDeleteProductEvent(DeleteProductEvent event) async* {
+  Stream<ProductState> _mapToDeleteProductEvent(
+      DeleteProductEvent event) async* {
     var crState = state;
     if (crState is ProductLoadedState) {
       yield DeletingProductState();

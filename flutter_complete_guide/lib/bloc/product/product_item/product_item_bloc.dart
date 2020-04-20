@@ -4,7 +4,7 @@ import 'package:flutter_complete_guide/bloc/product/product_bloc.dart';
 import 'package:flutter_complete_guide/bloc/product/product_event.dart';
 import 'package:flutter_complete_guide/bloc/product/product_item/product_item_event.dart';
 import 'package:flutter_complete_guide/bloc/product/product_state.dart';
-import 'package:flutter_complete_guide/bloc/repository/product_repository.dart';
+import 'package:flutter_complete_guide/data/repository/product_repository.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 
 class ProductItemBloc extends Bloc<ProductItemEvent, Product> {

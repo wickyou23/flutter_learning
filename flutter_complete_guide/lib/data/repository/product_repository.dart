@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:flutter_complete_guide/data/network_common.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 
 final List<Product> _dummyData = [
@@ -52,8 +54,32 @@ class ProductRepository {
     return _dummyData.firstWhere((v) => v.id == productId, orElse: () => null);
   }
 
-  void addNewProduct(Product newProduct) {
-    _dummyData.add(newProduct);
+  Future<ResponseState> addNewProduct(Product newProduct) async {
+    try {
+      return await NetworkCommon()
+          .dio
+          .post('/products.json', data: newProduct.toJson())
+          .then((val) {
+        var data = val.data as Map<String, dynamic>;
+        if (data.isNotEmpty) {
+          _dummyData.add(newProduct);
+          return ResponseSuccessState(
+            statusCode: val.statusCode,
+            responseData: newProduct,
+          );
+        } else {
+          return ResponseFailedState(
+            statusCode: val.statusCode,
+            errorMessage: 'Empty data error!',
+          );
+        }
+      });
+    } on DioError catch (e) {
+      return ResponseFailedState(
+        statusCode: e.response.statusCode,
+        errorMessage: e.message,
+      );
+    }
   }
 
   void updateProduct(Product product) {

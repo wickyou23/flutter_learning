@@ -18,6 +18,7 @@ class EditProductScreen extends StatefulWidget {
 
 class _EditProductScreenState extends State<EditProductScreen> {
   String _imageUrl = '';
+  bool _isFirstLoad = true;
   final GlobalKey<FormState> _mainForm = GlobalKey<FormState>();
   final FocusNode _titleFocus = FocusNode();
   final FocusNode _priceFocus = FocusNode();
@@ -36,6 +37,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
 
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _isFirstLoad = false;
   }
 
   @override
@@ -99,8 +106,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
       ),
       body: BlocListener<ProductBloc, ProductState>(
         listener: (ctx, state) {
-          if (state is AddedNewProductState || state is UpdatedProductState) {
-            context.navigator.pop();
+          if (state is AddingNewProductState) {
+            FocusScope.of(context).requestFocus(FocusNode());
+            context.showLoadingAlert(message: 'Adding product...');
+          } else if (state is AddedNewProductState ||
+              state is UpdatedProductState) {
+            context.navigator.popUntil(
+              ModalRoute.withName('/product-managed-screen'),
+            );
           }
         },
         child: Container(
@@ -349,7 +362,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               key: imageUrlForm,
               child: TextFormField(
                 controller: textFieldUrl,
-                autofocus: true,
+                autofocus: _isFirstLoad,
                 decoration: InputDecoration(
                   hintText: 'Enter image url',
                   border: const OutlineInputBorder(),
