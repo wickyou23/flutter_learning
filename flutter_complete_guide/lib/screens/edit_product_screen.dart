@@ -97,23 +97,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
         title: Text('Edit Product'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.done),
-            onPressed: () {
-              // _handleAddProduct();
-              context.showLoadingAlert(message: 'Adding product...');
-            },
-          )
+              icon: Icon(Icons.done),
+              onPressed: () {
+                FocusScope.of(context).unfocus();
+                _handleAddProduct();
+              })
         ],
       ),
       body: BlocListener<ProductBloc, ProductState>(
         listener: (ctx, state) {
           if (state is AddingNewProductState) {
-            FocusScope.of(context).requestFocus(FocusNode());
             context.showLoadingAlert(message: 'Adding product...');
           } else if (state is AddedNewProductState ||
               state is UpdatedProductState) {
             context.navigator.popUntil(
-              ModalRoute.withName('/product-managed-screen'),
+              (r) => r.settings.name == "/product-managed-screen",
             );
           }
         },
@@ -363,7 +361,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               key: imageUrlForm,
               child: TextFormField(
                 controller: textFieldUrl,
-                autofocus: _isFirstLoad,
+                autofocus: true,
                 decoration: InputDecoration(
                   hintText: 'Enter image url',
                   border: const OutlineInputBorder(),

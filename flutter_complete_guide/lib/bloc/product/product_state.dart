@@ -10,6 +10,20 @@ abstract class ProductState extends Equatable {
   List<Object> get props => [];
 }
 
+class ProductLoadingState extends ProductState {}
+
+class ProductLoadFailedState extends ProductState {
+  final ResponseFailedState failedState;
+
+  ProductLoadFailedState({@required this.failedState});
+
+  @override
+  List<Object> get props => [failedState];
+
+  @override
+  String toString() => 'ProductLoadFailedState { failed: $failedState }';
+}
+
 class ProductLoadedState extends ProductState {
   final List<Product> products;
   final bool isFavoriteFilter;

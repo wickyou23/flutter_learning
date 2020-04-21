@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +9,7 @@ import 'package:flutter_complete_guide/bloc/cart/cart_state.dart';
 import 'package:flutter_complete_guide/bloc/product/product_bloc.dart';
 import 'package:flutter_complete_guide/bloc/product/product_event.dart';
 import 'package:flutter_complete_guide/bloc/product/product_state.dart';
+import 'package:flutter_complete_guide/models/product.dart';
 import 'package:flutter_complete_guide/screens/left_menu_drawer.dart';
 import 'package:flutter_complete_guide/utils/extension.dart';
 import 'package:flutter_complete_guide/widgets/product_cell.dart';
@@ -16,6 +20,30 @@ class ShopScreen extends StatefulWidget {
 }
 
 class _ShopScreenState extends State<ShopScreen> {
+  final GlobalKey<RefreshIndicatorState> _refreshKey =
+      GlobalKey<RefreshIndicatorState>();
+  bool _isFirstLoad = true;
+  Completer<void> _refreshCompleter;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshCompleter = Completer<void>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_isFirstLoad) {
+        _refreshKey.currentState.show();
+        context.bloc<ProductBloc>().add(GetAllProductEvent());
+        _isFirstLoad = false;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    print('ShopScreen dispose =================');
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,32 +92,42 @@ class _ShopScreenState extends State<ShopScreen> {
           ),
         ],
       ),
-      body: BlocBuilder<ProductBloc, ProductState>(
-        builder: (ctx, state) {
+      body: BlocConsumer<ProductBloc, ProductState>(
+        listener: (_, state) {
           if (state is ProductLoadedState) {
-            return state.products.isEmpty
-                ? Center(
-                    child: Text('Product is empty'),
-                  )
-                : GridView.builder(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 3 / 2.3,
-                    ),
-                    itemBuilder: (ctx, index) {
-                      return ProductCell(product: state.products[index]);
-                    },
-                    itemCount: state.products.length,
-                  );
-          } else {
-            return Center(
-              child: Text('Product is empty'),
-            );
+            _refreshCompleter?.complete();
+            _refreshCompleter = Completer<void>();
           }
+        },
+        buildWhen: (pre, cur) {
+          return (cur is ProductLoadedState);
+        },
+        builder: (_, state) {
+          List<Product> products = List<Product>();
+          if (state is ProductLoadedState) {
+            products = state.products;
+          }
+
+          return RefreshIndicator(
+            key: _refreshKey,
+            child: GridView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 3 / 2.3,
+              ),
+              itemBuilder: (ctx, index) {
+                return ProductCell(product: products[index]);
+              },
+              itemCount: products.length,
+            ),
+            onRefresh: () async {
+              context.bloc<ProductBloc>().add(GetAllProductEvent());
+              return _refreshCompleter.future;
+            },
+          );
         },
       ),
       floatingActionButton: BlocBuilder<CartBloc, CartState>(

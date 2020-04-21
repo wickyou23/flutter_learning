@@ -2,78 +2,83 @@ import 'package:dio/dio.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 
-final List<Product> _dummyData = [
-  Product(
-    id: 'p1',
-    title: 'Red Shirt',
-    description: 'A red shirt - it is pretty red!',
-    price: 29.99,
-    imageUrl:
-        'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
-  ),
-  Product(
-    id: 'p2',
-    title: 'Trousers',
-    description: 'A nice pair of trousers.',
-    price: 59.99,
-    imageUrl:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
-  ),
-  Product(
-    id: 'p3',
-    title: 'Yellow Scarf',
-    description: 'Warm and cozy - exactly what you need for the winter.',
-    price: 19.99,
-    imageUrl: 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
-  ),
-  Product(
-    id: 'p4',
-    title: 'A Pan',
-    description: 'Prepare any meal you want.',
-    price: 49.99,
-    imageUrl:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
-  ),
-];
+final Map<String, Product> _dummyData = {};
 
 class ProductRepository {
-  List<Product> get getAllProduct => [..._dummyData];
+  List<Product> get getAllStoredProduct => [..._dummyData.values.toList()];
 
   List<Product> get getFavoriteProduct =>
-      [..._dummyData.where((v) => v.isFavorite)];
+      [..._dummyData.values.toList().where((v) => v.isFavorite)];
 
   void setIsFavorite(String productId, bool isFavorite) {
-    _dummyData.firstWhere((v) => v.id == productId).isFavorite = isFavorite;
+    _dummyData.values.toList().firstWhere((v) => v.id == productId).isFavorite =
+        isFavorite;
   }
 
   List<Product> getProductByIds(List<String> ids) {
-    return _dummyData.where((v) => ids.contains(v.id));
+    return _dummyData.values.toList().where((v) => ids.contains(v.id));
   }
 
   Product getProductById(String productId) {
-    return _dummyData.firstWhere((v) => v.id == productId, orElse: () => null);
+    return _dummyData.values
+        .toList()
+        .firstWhere((v) => v.id == productId, orElse: () => null);
+  }
+
+  Future<ResponseState> getAllProduct() async {
+    try {
+      var response = await NetworkCommon().dio.get('/products.json');
+      var data = response.data as Map<String, dynamic>;
+      if (data.isNotEmpty) {
+        data.forEach((k, v) {
+          Map<String, dynamic> value = v as Map<String, dynamic>;
+          if (value != null) {
+            var newProduct = Product.fromJson(productId: k, values: value);
+            _dummyData.update(k, (v) => newProduct, ifAbsent: () => newProduct);
+          }
+        });
+
+        _dummyData.removeWhere((k, vl) => !data.containsKey(k));
+
+        return ResponseSuccessState(
+          statusCode: response.statusCode,
+          responseData: _dummyData,
+        );
+      } else {
+        return ResponseFailedState(
+          statusCode: response.statusCode,
+          errorMessage: 'Empty data error!',
+        );
+      }
+    } on DioError catch (e) {
+      return ResponseFailedState(
+        statusCode: e.response.statusCode,
+        errorMessage: e.message,
+      );
+    }
   }
 
   Future<ResponseState> addNewProduct(Product newProduct) async {
     try {
-      return await NetworkCommon()
+      var response = await NetworkCommon()
           .dio
-          .post('/products.json', data: newProduct.toJson())
-          .then((val) {
-        var data = val.data as Map<String, dynamic>;
-        if (data.isNotEmpty) {
-          _dummyData.add(newProduct);
-          return ResponseSuccessState(
-            statusCode: val.statusCode,
-            responseData: newProduct,
-          );
-        } else {
-          return ResponseFailedState(
-            statusCode: val.statusCode,
-            errorMessage: 'Empty data error!',
-          );
-        }
-      });
+          .post('/products.json', data: newProduct.toJson());
+      var data = response.data as Map<String, dynamic>;
+      String newProductId = data['name'] ?? '';
+      if (newProductId.isNotEmpty) {
+        var tmpProduct = newProduct.copyWith(id: newProductId);
+        _dummyData.update(newProductId, (v) => tmpProduct,
+            ifAbsent: () => tmpProduct);
+        return ResponseSuccessState(
+          statusCode: response.statusCode,
+          responseData: tmpProduct,
+        );
+      } else {
+        return ResponseFailedState(
+          statusCode: response.statusCode,
+          errorMessage: 'Empty data error!',
+        );
+      }
     } on DioError catch (e) {
       return ResponseFailedState(
         statusCode: e.response.statusCode,
@@ -83,13 +88,10 @@ class ProductRepository {
   }
 
   void updateProduct(Product product) {
-    var idx = _dummyData.indexWhere((v) => v.id == product.id);
-    if (idx != null) {
-      _dummyData[idx] = product;
-    }
+    _dummyData.update(product.id, (v) => product, ifAbsent: () => product);
   }
 
   void deleteProduct(String productId) {
-    _dummyData.removeWhere((v) => v.id == productId);
+    _dummyData.removeWhere((k, v) => k == productId);
   }
 }

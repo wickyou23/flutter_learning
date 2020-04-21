@@ -23,7 +23,6 @@ class ProductCell extends StatelessWidget {
       ),
       child: BlocBuilder<ProductItemBloc, Product>(
         builder: (ctx, state) {
-          print('rebuild product item ${state.id}');
           return Card(
             key: Key(state.id),
             elevation: 5,

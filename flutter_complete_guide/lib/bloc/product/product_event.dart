@@ -12,6 +12,8 @@ class ProductFilterAllEvent extends ProductEvent {}
 
 class ProductFilterFavoriteEvent extends ProductEvent {}
 
+class GetAllProductEvent extends ProductEvent {}
+
 class AddNewProductEvent extends ProductEvent {
   final Product newProduct;
 
