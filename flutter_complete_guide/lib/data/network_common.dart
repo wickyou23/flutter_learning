@@ -124,11 +124,18 @@ abstract class ResponseState {
   ResponseState({@required this.statusCode});
 }
 
-class ResponseSuccessState extends ResponseState {
-  final dynamic responseData;
+class ResponseSuccessState<T> extends ResponseState {
+  final T responseData;
 
   ResponseSuccessState({@required int statusCode, @required this.responseData})
       : super(statusCode: statusCode);
+
+  ResponseSuccessState<T> copyWith({int statusCode, T responseData}) {
+    return ResponseSuccessState<T>(
+      statusCode: statusCode ?? this.statusCode,
+      responseData: responseData ?? this.responseData,
+    );
+  }
 }
 
 class ResponseFailedState extends ResponseState {

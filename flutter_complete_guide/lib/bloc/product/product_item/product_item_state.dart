@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_complete_guide/data/network_common.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 
 abstract class ProductItemState extends Equatable {
@@ -9,14 +10,38 @@ abstract class ProductItemState extends Equatable {
   List<Object> get props => [];
 }
 
-class ProductItemUpdated extends ProductItemState {
+class ProductItemReadyState extends ProductItemState {
   final Product product;
 
-  ProductItemUpdated({@required this.product});
+  ProductItemReadyState({@required this.product});
 
   @override
   List<Object> get props => [product];
 
   @override
-  String toString() => 'ProductItemUpdated { product $product }';
+  String toString() => 'ProductItemReadyState { product $product }';
+}
+
+class ProductItemUpdatedState extends ProductItemState {
+  final Product product;
+
+  ProductItemUpdatedState({@required this.product});
+
+  @override
+  List<Object> get props => [product];
+
+  @override
+  String toString() => 'ProductItemUpdatedState { product $product }';
+}
+
+class ProductItemSetFavoriteFailedState extends ProductItemState {
+  final ResponseFailedState responseErrorState;
+
+  ProductItemSetFavoriteFailedState({@required this.responseErrorState});
+
+  @override
+  List<Object> get props => [responseErrorState];
+
+  @override
+  String toString() => "ProductItemSetFavoriteFailedState{ isFavorite: $responseErrorState}";
 }

@@ -19,6 +19,7 @@ class _ProductManagedScreenState extends State<ProductManagedScreen> {
       GlobalKey<RefreshIndicatorState>();
   Completer<void> _refreshCompleter;
   bool _isFirstLoad = true;
+  List<Product> _products = [];
 
   @override
   void initState() {
@@ -61,20 +62,25 @@ class _ProductManagedScreenState extends State<ProductManagedScreen> {
             }
           },
           buildWhen: (_, state) {
-            return (state is ProductLoadedState);
+            return (state is ProductLoadedState ||
+                state is DeletingProductState);
           },
           builder: (_, state) {
-            List<Product> products = [];
             if (state is ProductLoadedState) {
-              products = state.products;
+              _products = state.products;
+            }
+
+            String productIdDeleting = '';
+            if (state is DeletingProductState) {
+              productIdDeleting = state.productId;
             }
 
             return RefreshIndicator(
               key: _refreshKey,
               child: ListView.separated(
-                itemCount: products.length,
+                itemCount: _products.length,
                 itemBuilder: (_, index) {
-                  final item = products[index];
+                  final item = _products[index];
                   return Container(
                     height: 80,
                     child: Align(
@@ -106,43 +112,57 @@ class _ProductManagedScreenState extends State<ProductManagedScreen> {
                             fontSize: 16,
                           ),
                         ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Container(
-                              width: 50,
-                              child: IconButton(
-                                icon: Icon(Icons.edit),
-                                color: context.theme.primaryColor,
-                                onPressed: () {
-                                  context.navigator.pushNamed(
-                                      '/edit-product-creen',
-                                      arguments: {
-                                        'bloc': context.bloc<ProductBloc>(),
-                                        'product': item,
-                                      });
-                                },
+                        trailing: (productIdDeleting == item.id)
+                            ? Container(
+                                margin: const EdgeInsets.only(right: 20),
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Container(
+                                    width: 50,
+                                    child: IconButton(
+                                      icon: Icon(Icons.edit),
+                                      color: context.theme.primaryColor,
+                                      onPressed: productIdDeleting.isNotEmpty
+                                          ? null
+                                          : () {
+                                              context.navigator.pushNamed(
+                                                  '/edit-product-creen',
+                                                  arguments: {
+                                                    'bloc': context
+                                                        .bloc<ProductBloc>(),
+                                                    'product': item,
+                                                  });
+                                            },
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 50,
+                                    child: IconButton(
+                                      icon: Icon(Icons.delete),
+                                      color: Colors.redAccent,
+                                      onPressed: productIdDeleting.isNotEmpty
+                                          ? null
+                                          : () async {
+                                              var isRemove = await context
+                                                  .showAlertConfirm();
+                                              if (isRemove) {
+                                                context.bloc<ProductBloc>().add(
+                                                      DeleteProductEvent(
+                                                          productId: item.id),
+                                                    );
+                                              }
+                                            },
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            Container(
-                              width: 50,
-                              child: IconButton(
-                                icon: Icon(Icons.delete),
-                                color: Colors.redAccent,
-                                onPressed: () async {
-                                  var isRemove =
-                                      await context.showAlertConfirm();
-                                  if (isRemove) {
-                                    context.bloc<ProductBloc>().add(
-                                          DeleteProductEvent(
-                                              productId: item.id),
-                                        );
-                                  }
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
                     ),
                   );

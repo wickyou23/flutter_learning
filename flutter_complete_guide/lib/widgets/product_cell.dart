@@ -5,6 +5,7 @@ import 'package:flutter_complete_guide/bloc/cart/cart_event.dart';
 import 'package:flutter_complete_guide/bloc/product/product_bloc.dart';
 import 'package:flutter_complete_guide/bloc/product/product_item/product_item_bloc.dart';
 import 'package:flutter_complete_guide/bloc/product/product_item/product_item_event.dart';
+import 'package:flutter_complete_guide/bloc/product/product_item/product_item_state.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 import 'package:flutter_complete_guide/utils/extension.dart';
 
@@ -21,10 +22,27 @@ class ProductCell extends StatelessWidget {
         product: product,
         productBloc: context.bloc<ProductBloc>(),
       ),
-      child: BlocBuilder<ProductItemBloc, Product>(
+      child: BlocConsumer<ProductItemBloc, ProductItemState>(
+        listener: (_, cur) {
+          if (cur is ProductItemSetFavoriteFailedState) {
+            Scaffold.of(context)?.showSnackBar(
+              SnackBar(
+                content: Text(cur.responseErrorState.errorMessage),
+              ),
+            );
+          }
+        },
+        buildWhen: (_, cur) {
+          return (cur is ProductItemReadyState);
+        },
         builder: (ctx, state) {
+          Product product;
+          if (state is ProductItemReadyState) {
+            product = state.product;
+          }
+
           return Card(
-            key: Key(state.id),
+            key: Key(product.id),
             elevation: 5,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -42,7 +60,7 @@ class ProductCell extends StatelessWidget {
                       Flexible(
                         fit: FlexFit.tight,
                         child: Text(
-                          state.title,
+                          product.title,
                           style: context.theme.textTheme.title.copyWith(
                             color: Colors.white,
                             fontSize: 14,
@@ -56,7 +74,7 @@ class ProductCell extends StatelessWidget {
                         child: IconButton(
                           iconSize: 20,
                           padding: EdgeInsets.zero,
-                          icon: state.isFavorite
+                          icon: product.isFavorite
                               ? Icon(
                                   Icons.favorite,
                                   color: Colors.white,
@@ -68,7 +86,7 @@ class ProductCell extends StatelessWidget {
                           onPressed: () {
                             ctx.bloc<ProductItemBloc>().add(
                                   SetFavoriteEvent(
-                                      isFavorite: !state.isFavorite),
+                                      isFavorite: !product.isFavorite),
                                 );
                           },
                         ),
@@ -83,8 +101,8 @@ class ProductCell extends StatelessWidget {
                             color: Colors.white,
                           ),
                           onPressed: () {
-                            context.bloc<CartBloc>().add(
-                                  AddProductToCartEvent(product: state),
+                            ctx.bloc<CartBloc>().add(
+                                  AddProductToCartEvent(product: product),
                                 );
                           },
                         ),
@@ -95,7 +113,7 @@ class ProductCell extends StatelessWidget {
                 child: Container(
                   child: Stack(fit: StackFit.expand, children: [
                     Image.network(
-                      state.imageUrl,
+                      product.imageUrl,
                       fit: BoxFit.cover,
                     ),
                     FlatButton(

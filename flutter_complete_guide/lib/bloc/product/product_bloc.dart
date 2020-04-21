@@ -2,8 +2,10 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_complete_guide/bloc/product/product_event.dart';
 import 'package:flutter_complete_guide/bloc/product/product_state.dart';
+import 'package:flutter_complete_guide/data/middleware/product_middleware.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
 import 'package:flutter_complete_guide/data/repository/product_repository.dart';
+import 'package:flutter_complete_guide/models/product.dart';
 
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final ProductRepository productRepository;
@@ -28,8 +30,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   }
 
   @override
-  ProductState get initialState =>
-      ProductLoadedState(products: productRepository.getAllStoredProduct);
+  ProductState get initialState => ProductReadyState();
 
   @override
   Future<void> close() {
@@ -56,16 +57,25 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     var crState = state;
     if (crState is ProductLoadedState) {
       yield AddingNewProductState();
-      var response = await productRepository.addNewProduct(event.newProduct);
-      if (response is ResponseSuccessState) {
+      // If used to save to db or local memory
+      // var response = await productRepository.addNewProduct(event.newProduct);
+      var response = await ProductMiddleware().addNewProduct(event.newProduct);
+      if (response is ResponseSuccessState<Product>) {
         yield AddedNewProductState();
+        crState.products.add(response.responseData);
       } else {
         yield AddFailedNewProductState(
             failedState: response as ResponseFailedState);
       }
 
+      // If used to save to db or local memory
+      // yield ProductLoadedState(
+      //   products: productRepository.getAllStoredProduct,
+      //   isFavoriteFilter: crState.isFavoriteFilter,
+      // );
+
       yield ProductLoadedState(
-        products: productRepository.getAllStoredProduct,
+        products: crState.products,
         isFavoriteFilter: crState.isFavoriteFilter,
       );
     }
@@ -76,10 +86,25 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     var crState = state;
     if (crState is ProductLoadedState) {
       yield UpdatingProductState();
-      productRepository.updateProduct(event.product);
-      yield UpdatedProductState();
+      // If used to save to db or local memory
+      // var response = await productRepository.updateProduct(event.product);
+      var response = await ProductMiddleware().updateProduct(event.product);
+      if (response is ResponseSuccessState<Product>) {
+        yield UpdatedProductState();
+        var idx = crState.products.indexWhere((v) => v.id == response.responseData.id);
+        if (idx != -1) {
+          crState.products[idx] = response.responseData;
+        }
+      }
+      
+      // If used to save to db or local memory
+      // yield ProductLoadedState(
+      //   products: productRepository.getAllStoredProduct,
+      //   isFavoriteFilter: crState.isFavoriteFilter,
+      // );
+
       yield ProductLoadedState(
-        products: productRepository.getAllStoredProduct,
+        products: crState.products,
         isFavoriteFilter: crState.isFavoriteFilter,
       );
     }
@@ -89,11 +114,23 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       DeleteProductEvent event) async* {
     var crState = state;
     if (crState is ProductLoadedState) {
-      yield DeletingProductState();
-      productRepository.deleteProduct(event.productId);
-      yield DeletedProductState();
+      yield DeletingProductState(productId: event.productId);
+      // If used to save to db or local memory
+      // var response = await productRepository.deleteProduct(event.productId);
+      var response = await ProductMiddleware().deleteProduct(event.productId);
+      if (response is ResponseSuccessState<String>) {
+        yield DeletedProductState();
+        crState.products.removeWhere((v) => v.id == response.responseData);
+      }
+      
+      // If used to save to db or local memory
+      // yield ProductLoadedState(
+      //   products: productRepository.getAllStoredProduct,
+      //   isFavoriteFilter: crState.isFavoriteFilter,
+      // );
+
       yield ProductLoadedState(
-        products: productRepository.getAllStoredProduct,
+        products: crState.products,
         isFavoriteFilter: crState.isFavoriteFilter,
       );
     }
@@ -107,10 +144,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       isFavoriteFilter = crState.isFavoriteFilter;
     }
     yield ProductLoadingState();
-    var respState = await this.productRepository.getAllProduct();
+    // If used to save to db or local memory
+    // var respState = await this.productRepository.getAllProduct();
+    var respState = await ProductMiddleware().getAllProduct();
     var crResponseState = respState;
-    if (crResponseState is ResponseSuccessState) {
-      var products = crResponseState.responseData as Map<String, dynamic>;
+    if (crResponseState is ResponseSuccessState<Map<String, dynamic>>) {
+      var products = crResponseState.responseData;
       yield ProductLoadedState(
         products: products.values.toList(),
         isFavoriteFilter: isFavoriteFilter,

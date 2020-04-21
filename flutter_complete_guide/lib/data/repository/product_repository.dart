@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_complete_guide/data/middleware/product_middleware.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 
@@ -10,11 +11,6 @@ class ProductRepository {
   List<Product> get getFavoriteProduct =>
       [..._dummyData.values.toList().where((v) => v.isFavorite)];
 
-  void setIsFavorite(String productId, bool isFavorite) {
-    _dummyData.values.toList().firstWhere((v) => v.id == productId).isFavorite =
-        isFavorite;
-  }
-
   List<Product> getProductByIds(List<String> ids) {
     return _dummyData.values.toList().where((v) => ids.contains(v.id));
   }
@@ -25,73 +21,71 @@ class ProductRepository {
         .firstWhere((v) => v.id == productId, orElse: () => null);
   }
 
+  Future<ResponseState> setIsFavorite(Product product) async {
+    var response = await ProductMiddleware().updateFavoriteProduct(product);
+    var crResponse = response;
+    if (crResponse is ResponseSuccessState<Product>) {
+      _dummyData.values
+          .toList()
+          .firstWhere((v) => v.id == product.id)
+          .isFavorite = product.isFavorite;
+      return crResponse;
+    } else {
+      return crResponse;
+    }
+  }
+
   Future<ResponseState> getAllProduct() async {
-    try {
-      var response = await NetworkCommon().dio.get('/products.json');
-      var data = response.data as Map<String, dynamic>;
-      if (data.isNotEmpty) {
-        data.forEach((k, v) {
-          Map<String, dynamic> value = v as Map<String, dynamic>;
-          if (value != null) {
-            var newProduct = Product.fromJson(productId: k, values: value);
-            _dummyData.update(k, (v) => newProduct, ifAbsent: () => newProduct);
-          }
-        });
+    var response = await ProductMiddleware().getAllProduct();
+    var crResponse = response;
+    if (crResponse is ResponseSuccessState<Map<String, Product>>) {
+      crResponse.responseData.forEach((k, vl) {
+        _dummyData.update(k, (_) => vl, ifAbsent: () => vl);
+      });
 
-        _dummyData.removeWhere((k, vl) => !data.containsKey(k));
-
-        return ResponseSuccessState(
-          statusCode: response.statusCode,
-          responseData: _dummyData,
-        );
-      } else {
-        return ResponseFailedState(
-          statusCode: response.statusCode,
-          errorMessage: 'Empty data error!',
-        );
-      }
-    } on DioError catch (e) {
-      return ResponseFailedState(
-        statusCode: e.response.statusCode,
-        errorMessage: e.message,
-      );
+      _dummyData
+          .removeWhere((k, _) => !crResponse.responseData.keys.contains(k));
+      return crResponse.copyWith(responseData: _dummyData);
+    } else {
+      return response;
     }
   }
 
   Future<ResponseState> addNewProduct(Product newProduct) async {
-    try {
-      var response = await NetworkCommon()
-          .dio
-          .post('/products.json', data: newProduct.toJson());
-      var data = response.data as Map<String, dynamic>;
-      String newProductId = data['name'] ?? '';
-      if (newProductId.isNotEmpty) {
-        var tmpProduct = newProduct.copyWith(id: newProductId);
-        _dummyData.update(newProductId, (v) => tmpProduct,
-            ifAbsent: () => tmpProduct);
-        return ResponseSuccessState(
-          statusCode: response.statusCode,
-          responseData: tmpProduct,
-        );
-      } else {
-        return ResponseFailedState(
-          statusCode: response.statusCode,
-          errorMessage: 'Empty data error!',
-        );
-      }
-    } on DioError catch (e) {
-      return ResponseFailedState(
-        statusCode: e.response.statusCode,
-        errorMessage: e.message,
+    var response = await ProductMiddleware().addNewProduct(newProduct);
+    if (response is ResponseSuccessState<Product>) {
+      _dummyData.update(
+        response.responseData.id,
+        (_) => response.responseData,
+        ifAbsent: () => response.responseData,
       );
+      return response;
+    } else {
+      return response;
     }
   }
 
-  void updateProduct(Product product) {
-    _dummyData.update(product.id, (v) => product, ifAbsent: () => product);
+  Future<ResponseState> updateProduct(Product product) async {
+    var response = await ProductMiddleware().updateProduct(product);
+    if (response is ResponseSuccessState<Product>) {
+      _dummyData.update(
+        response.responseData.id,
+        (v) => response.responseData,
+        ifAbsent: () => response.responseData,
+      );
+      return response;
+    } else {
+      return response;
+    }
   }
 
-  void deleteProduct(String productId) {
-    _dummyData.removeWhere((k, v) => k == productId);
+  Future<ResponseState> deleteProduct(String productId) async {
+    var response = await ProductMiddleware().deleteProduct(productId);
+    if (response is ResponseSuccessState<String>) {
+      _dummyData.removeWhere((k, v) => k == response.responseData);
+      return response;
+    } else {
+      return response;
+    }
   }
 }

@@ -9,6 +9,7 @@ import 'package:flutter_complete_guide/bloc/cart/cart_event.dart';
 import 'package:flutter_complete_guide/bloc/cart/cart_state.dart';
 import 'package:flutter_complete_guide/bloc/product/product_item/product_item_bloc.dart';
 import 'package:flutter_complete_guide/bloc/product/product_item/product_item_event.dart';
+import 'package:flutter_complete_guide/bloc/product/product_item/product_item_state.dart';
 import 'package:flutter_complete_guide/models/cart_item.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 import 'package:flutter_complete_guide/utils/extension.dart';
@@ -84,11 +85,20 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     _heightAppBar = context.media.viewPadding.top + _heightDefaultAppBar;
     return BlocProvider.value(
       value: context.routeArg as ProductItemBloc,
-      child: BlocBuilder<ProductItemBloc, Product>(
+      child: BlocBuilder<ProductItemBloc, ProductItemState>(
         condition: (pre, cur) {
           return !_isPopping;
         },
         builder: (ctx, state) {
+          Product product;
+          if (state is ProductItemReadyState) {
+            product = state.product;
+          }
+
+          if (product == null) {
+            return Container();
+          }
+
           return BlocListener<CartBloc, CartState>(
             listener: (ctx, state) {
               if (state is RemoveProductState) {
@@ -100,17 +110,17 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
             child: Scaffold(
               body: Stack(
                 children: [
-                  _contentWidget(state),
-                  _bottomWidget(state),
+                  _contentWidget(product),
+                  _bottomWidget(product),
                   AnimatedOpacity(
                     opacity: _isSwitchAppBar ? 1 : 0,
                     duration: Duration(milliseconds: 200),
-                    child: _mainAppBar(ctx, state),
+                    child: _mainAppBar(ctx, product),
                   ),
                   AnimatedOpacity(
                     opacity: _isSwitchAppBar ? 0 : 1,
                     duration: Duration(milliseconds: 200),
-                    child: _subAppBar(ctx, state),
+                    child: _subAppBar(ctx, product),
                   ),
                 ],
               ),

@@ -108,6 +108,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
         listener: (ctx, state) {
           if (state is AddingNewProductState) {
             context.showLoadingAlert(message: 'Adding product...');
+          } else if (state is UpdatingProductState) {
+            context.showLoadingAlert(message: 'Updating product...');
           } else if (state is AddedNewProductState ||
               state is UpdatedProductState) {
             context.navigator.popUntil(

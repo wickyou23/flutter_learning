@@ -10,12 +10,16 @@ abstract class ProductState extends Equatable {
   List<Object> get props => [];
 }
 
+//Get Product State
+
+class ProductReadyState extends ProductState {}
+
 class ProductLoadingState extends ProductState {}
 
 class ProductLoadFailedState extends ProductState {
   final ResponseFailedState failedState;
 
-  ProductLoadFailedState({@required this.failedState});
+  const ProductLoadFailedState({@required this.failedState});
 
   @override
   List<Object> get props => [failedState];
@@ -37,8 +41,10 @@ class ProductLoadedState extends ProductState {
   List<Object> get props => [products];
 
   @override
-  String toString() => 'ProductLoaded { todos: $products }';
+  String toString() => 'ProductLoaded { products: $products }';
 }
+
+//Add State
 
 class AddingNewProductState extends ProductState {}
 
@@ -47,7 +53,7 @@ class AddedNewProductState extends ProductState {}
 class AddFailedNewProductState extends ProductState {
   final ResponseFailedState failedState;
 
-  AddFailedNewProductState({@required this.failedState});
+  const AddFailedNewProductState({@required this.failedState});
 
   @override
   List<Object> get props => [failedState];
@@ -56,10 +62,26 @@ class AddFailedNewProductState extends ProductState {
   String toString() => 'AddFailedNewProductState { failed: $failedState }';
 }
 
+//Update State
+
 class UpdatingProductState extends ProductState {}
 
 class UpdatedProductState extends ProductState {}
 
-class DeletingProductState extends ProductState {}
+//Delete State
+
+class DeletingProductState extends ProductState {
+  final String productId;
+
+  const DeletingProductState({
+    @required this.productId,
+  });
+
+  @override
+  List<Object> get props => [productId];
+
+  @override
+  String toString() => 'DeletingProductState { productId: $productId }';
+}
 
 class DeletedProductState extends ProductState {}
