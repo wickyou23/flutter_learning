@@ -57,7 +57,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     var crState = state;
     if (crState is ProductLoadedState) {
       yield AddingNewProductState();
-      // If used to save to db or local memory
+      // Used to save to db or local memory
       // var response = await productRepository.addNewProduct(event.newProduct);
       var response = await ProductMiddleware().addNewProduct(event.newProduct);
       if (response is ResponseSuccessState<Product>) {
@@ -68,7 +68,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
             failedState: response as ResponseFailedState);
       }
 
-      // If used to save to db or local memory
+      // Used to save to db or local memory
       // yield ProductLoadedState(
       //   products: productRepository.getAllStoredProduct,
       //   isFavoriteFilter: crState.isFavoriteFilter,
@@ -86,7 +86,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     var crState = state;
     if (crState is ProductLoadedState) {
       yield UpdatingProductState();
-      // If used to save to db or local memory
+      // Used to save to db or local memory
       // var response = await productRepository.updateProduct(event.product);
       var response = await ProductMiddleware().updateProduct(event.product);
       if (response is ResponseSuccessState<Product>) {
@@ -97,7 +97,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         }
       }
       
-      // If used to save to db or local memory
+      // Used to save to db or local memory
       // yield ProductLoadedState(
       //   products: productRepository.getAllStoredProduct,
       //   isFavoriteFilter: crState.isFavoriteFilter,
@@ -115,7 +115,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     var crState = state;
     if (crState is ProductLoadedState) {
       yield DeletingProductState(productId: event.productId);
-      // If used to save to db or local memory
+      // Used to save to db or local memory
       // var response = await productRepository.deleteProduct(event.productId);
       var response = await ProductMiddleware().deleteProduct(event.productId);
       if (response is ResponseSuccessState<String>) {
@@ -123,7 +123,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         crState.products.removeWhere((v) => v.id == response.responseData);
       }
       
-      // If used to save to db or local memory
+      // Used to save to db or local memory
       // yield ProductLoadedState(
       //   products: productRepository.getAllStoredProduct,
       //   isFavoriteFilter: crState.isFavoriteFilter,
@@ -144,7 +144,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       isFavoriteFilter = crState.isFavoriteFilter;
     }
     yield ProductLoadingState();
-    // If used to save to db or local memory
+    // Used to save to db or local memory
     // var respState = await this.productRepository.getAllProduct();
     var respState = await ProductMiddleware().getAllProduct();
     var crResponseState = respState;

@@ -42,7 +42,7 @@ class ProductItemBloc extends Bloc<ProductItemEvent, ProductItemState> {
     product.isFavorite = event.isFavorite;
     product = product.copyWith(isFavorite: event.isFavorite);
     yield ProductItemReadyState(product: product);
-    // If used to save to db or local memory
+    // Used to save to db or local memory
     // var response = await _productRepository.setIsFavorite(product);
     var response = await ProductMiddleware().updateFavoriteProduct(product);
     if (response is ResponseFailedState) {
