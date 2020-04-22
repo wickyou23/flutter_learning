@@ -45,9 +45,10 @@ class ProductMiddleware {
 
   Future<ResponseState> addNewProduct(Product newProduct) async {
     try {
-      var response = await NetworkCommon()
-          .dio
-          .post('/products.json', data: newProduct.toJson());
+      var response = await NetworkCommon().dio.post(
+            '/products.json',
+            data: newProduct.toJson(),
+          );
       var data = response.data as Map<String, dynamic>;
       String newProductId = data['name'] ?? '';
       if (newProductId.isNotEmpty) {
