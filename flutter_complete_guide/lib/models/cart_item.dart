@@ -31,6 +31,10 @@ class CartItem {
     return _product;
   }
 
+  set product(Product newProduct) {
+    _product = newProduct;
+  }
+
   double getSumMoney() {
     return (product?.price ?? 0) * quantity;
   }

@@ -6,6 +6,7 @@ import 'package:flutter_complete_guide/bloc/cart/cart_event.dart';
 import 'package:flutter_complete_guide/bloc/cart/cart_state.dart';
 import 'package:flutter_complete_guide/bloc/transaction/transaction_bloc.dart';
 import 'package:flutter_complete_guide/bloc/transaction/transaction_event.dart';
+import 'package:flutter_complete_guide/bloc/transaction/transaction_state.dart';
 import 'package:flutter_complete_guide/models/cart_item.dart';
 import 'package:flutter_complete_guide/utils/extension.dart';
 
@@ -15,7 +16,10 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isPoping = false;
+  bool _isValidating = true;
+  bool _isOrdering = false;
 
   @override
   void initState() {
@@ -30,6 +34,9 @@ class _CartScreenState extends State<CartScreen> {
     return MultiBlocListener(
       listeners: [
         BlocListener<CartBloc, CartState>(
+          condition: (_, __) {
+            return !_isPoping;
+          },
           listener: (_, state) {
             if (state is CartReadyState) {
               if (state.cart.cartItems.isEmpty) {
@@ -37,7 +44,7 @@ class _CartScreenState extends State<CartScreen> {
               }
             }
 
-            if (state is ValidateCartState) {
+            if (state is ValidatedCartState) {
               if (state.productIdsRemoved.isNotEmpty) {
                 context
                     .showAlert(message: 'Some products is not available.')
@@ -47,11 +54,30 @@ class _CartScreenState extends State<CartScreen> {
                   }
                 });
               }
+
+              setState(() {
+                _isValidating = false;
+              });
+            }
+          },
+        ),
+        BlocListener<TransactionBloc, TransactionState>(
+          listener: (_, state) {
+            if (state is AddNewTransactionSuccessState) {
+              _isPoping = context.navigator.pop(true);
+            } else if (state is AddNewTransactionFailedState) {
+              _isOrdering = false;
+              _scaffoldKey.currentState.showSnackBar(
+                SnackBar(
+                  content: Text(state.failedState.errorMessage),
+                ),
+              );
             }
           },
         ),
       ],
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text(
             'Cart',
@@ -62,37 +88,44 @@ class _CartScreenState extends State<CartScreen> {
             ),
           ),
         ),
-        body: Container(
-          color: Colors.grey.withPercentAlpha(0.1),
-          child: Column(
-            children: <Widget>[
-              Expanded(child: _cartItemList()),
-              Container(
-                height: 110,
-                padding: const EdgeInsets.only(
-                  top: 8.0,
-                  bottom: 16.0,
-                  left: 16.0,
-                  right: 16.0,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey,
-                      blurRadius: 5,
-                    )
-                  ],
-                  borderRadius: BorderRadius.only(
-                    topLeft: const Radius.circular(16.0),
-                    topRight: const Radius.circular(16.0),
+        body: _isValidating
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : AbsorbPointer(
+                absorbing: _isOrdering,
+                child: Container(
+                  color: Colors.grey.withPercentAlpha(0.1),
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(child: _cartItemList()),
+                      Container(
+                        height: 110,
+                        padding: const EdgeInsets.only(
+                          top: 8.0,
+                          bottom: 16.0,
+                          left: 16.0,
+                          right: 16.0,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey,
+                              blurRadius: 5,
+                            )
+                          ],
+                          borderRadius: BorderRadius.only(
+                            topLeft: const Radius.circular(16.0),
+                            topRight: const Radius.circular(16.0),
+                          ),
+                        ),
+                        child: _bottomWidget(),
+                      )
+                    ],
                   ),
                 ),
-                child: _bottomWidget(),
-              )
-            ],
-          ),
-        ),
+              ),
       ),
     );
   }
@@ -101,7 +134,7 @@ class _CartScreenState extends State<CartScreen> {
     return BlocBuilder<CartBloc, CartState>(
       condition: (preState, curState) {
         bool isRebuild = !_isPoping;
-        if (curState is ValidateCartState) {
+        if (curState is ValidatedCartState) {
           isRebuild = isRebuild && !curState.isEmptyCart;
         }
 
@@ -288,67 +321,84 @@ class _CartScreenState extends State<CartScreen> {
     return BlocBuilder<CartBloc, CartState>(
       condition: (preState, curState) {
         bool isRebuild = !_isPoping;
-        if (curState is ValidateCartState) {
+        if (curState is ValidatedCartState) {
           isRebuild = isRebuild && !curState.isEmptyCart;
         }
 
         return isRebuild;
       },
-      builder: (ctx, state) {
-        if (state is CartReadyState) {
-          return Column(
-            children: <Widget>[
-              Expanded(
+      builder: (ctx, cartState) {
+        CartReadyState cartReadyState;
+        if (cartState is CartReadyState) {
+          cartReadyState = cartState;
+        }
+
+        if (cartState == null) {
+          return Container();
+        }
+
+        return BlocBuilder<TransactionBloc, TransactionState>(
+          builder: (_, transState) {
+            if (transState is AddingNewTransactionState) {
+              return Center(
                 child: Container(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Total:',
-                        style: context.theme.textTheme.title.copyWith(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        '\$${state.cart.getSumMoney().toStringAsFixed(2)}',
-                        style: context.theme.textTheme.title.copyWith(
-                          fontSize: 20,
-                        ),
-                      ),
-                    ],
-                  ),
+                  height: 40,
+                  width: 40,
+                  child: CircularProgressIndicator(),
                 ),
-              ),
-              Container(
-                height: 40,
-                width: double.infinity,
-                child: RaisedButton(
-                  color: context.theme.primaryColor,
-                  child: Text(
-                    'Order Now',
-                    style: context.theme.textTheme.title.copyWith(
-                      fontSize: 16,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+              );
+            }
+
+            return Column(
+              children: <Widget>[
+                Expanded(
+                  child: Container(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          'Total:',
+                          style: context.theme.textTheme.title.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '\$${cartReadyState.cart.getSumMoney().toStringAsFixed(2)}',
+                          style: context.theme.textTheme.title.copyWith(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  onPressed: () {
-                    context.bloc<TransactionBloc>().add(
-                          AddNewTransacionEvent(cart: state.cart),
-                        );
-                  },
                 ),
-              )
-            ],
-          );
-        } else {
-          return Container(
-            width: 0,
-            height: 0,
-          );
-        }
+                Container(
+                  height: 40,
+                  width: double.infinity,
+                  child: RaisedButton(
+                    color: context.theme.primaryColor,
+                    child: Text(
+                      'Order Now',
+                      style: context.theme.textTheme.title.copyWith(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: () {
+                      _isOrdering = true;
+                      context.bloc<TransactionBloc>().add(
+                            AddNewTransactionEvent(cart: cartReadyState.cart),
+                          );
+                    },
+                  ),
+                )
+              ],
+            );
+          },
+        );
       },
     );
   }

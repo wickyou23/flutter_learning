@@ -139,4 +139,31 @@ class ProductMiddleware {
       );
     }
   }
+
+  Future<ResponseState> getProductById(String productId) async {
+    try {
+      var response = await NetworkCommon().dio.get(
+            '/products/$productId.json',
+          );
+      var data = response.data as Map<String, dynamic>;
+      if (data != null && data.isNotEmpty) {
+        Product newProduct =
+            Product.fromJson(productId: productId, values: data);
+        return ResponseSuccessState(
+          statusCode: response.statusCode,
+          responseData: newProduct,
+        );
+      } else {
+        return ResponseFailedState(
+          statusCode: response.statusCode,
+          errorMessage: 'Empty data error!',
+        );
+      }
+    } on DioError catch (e) {
+      return ResponseFailedState(
+        statusCode: e.response.statusCode,
+        errorMessage: e.message,
+      );
+    }
+  }
 }

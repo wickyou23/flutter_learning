@@ -1,3 +1,5 @@
+import 'package:flutter_complete_guide/data/middleware/product_middleware.dart';
+import 'package:flutter_complete_guide/data/network_common.dart';
 import 'package:flutter_complete_guide/data/repository/product_repository.dart';
 import 'package:flutter_complete_guide/models/cart.dart';
 import 'package:flutter_complete_guide/models/cart_item.dart';
@@ -41,12 +43,38 @@ class CartRepository {
     _myCard.cartItems.removeWhere((k, v) => k == product.id);
   }
 
-  List<String> validateCartItem() {
-    ProductRepository productRep = ProductRepository();
+  // Used to save to db or local memory
+  // List<String> validateCartItem() {
+  //   ProductRepository productRep = ProductRepository();
+  //   List<String> cartItemRemoved = List<String>();
+  //   for (String productId in _myCard.cartItems.keys.toList()) {
+  //     var findProduct = productRep.getProductById(productId);
+  //     if (findProduct == null) {
+  //       cartItemRemoved.add(productId);
+  //     }
+  //   }
+    
+  //   if (cartItemRemoved.isNotEmpty) {
+  //     _myCard.cartItems.removeWhere((k, v) => cartItemRemoved.contains(k));
+  //   }
+
+  //   return cartItemRemoved;
+  // }
+
+  Future<List<String>> validateCartItem() async {
     List<String> cartItemRemoved = List<String>();
     for (String productId in _myCard.cartItems.keys.toList()) {
-      var findProduct = productRep.getProductById(productId);
-      if (findProduct == null) {
+      var resp = await ProductMiddleware().getProductById(productId);
+      if (resp is ResponseSuccessState<Product>) {
+        if (resp.responseData != null) {
+          CartItem cartItem = _myCard.cartItems[productId];
+          cartItem.product = resp.responseData;
+        }
+        else {
+          cartItemRemoved.add(productId);
+        }
+      }
+      else {
         cartItemRemoved.add(productId);
       }
     }

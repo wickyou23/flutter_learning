@@ -78,9 +78,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   Stream<CartState> _mapToValidateCartEvent() async* {
     var crState = state;
     if (crState is CartReadyState) {
-      var productIdsRemoved = cartRep.validateCartItem();
+      yield ValidatingCartState();
+      var productIdsRemoved = await cartRep.validateCartItem();
       var isEmptyCart = cartRep.currentCart.cartItems.isEmpty;
-      yield ValidateCartState(productIdsRemoved: productIdsRemoved, isEmptyCart: isEmptyCart);
+      yield ValidatedCartState(productIdsRemoved: productIdsRemoved, isEmptyCart: isEmptyCart);
       if (!isEmptyCart) {
         yield CartReadyState(cart: cartRep.currentCart.copyWith());
       }

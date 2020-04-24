@@ -22,6 +22,7 @@ class ShopScreen extends StatefulWidget {
 class _ShopScreenState extends State<ShopScreen> {
   final GlobalKey<RefreshIndicatorState> _refreshKey =
       GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isFirstLoad = true;
   Completer<void> _refreshCompleter;
 
@@ -47,6 +48,7 @@ class _ShopScreenState extends State<ShopScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(
           'Shop App',
@@ -164,7 +166,15 @@ class _ShopScreenState extends State<ShopScreen> {
                 ],
               ),
               onPressed: () {
-                context.navigator.pushNamed('/cart-screen');
+                context.navigator.pushNamed('/cart-screen').then((v) {
+                  if (v is bool && v == true) {
+                    _scaffoldKey.currentState.showSnackBar(
+                      SnackBar(
+                        content: Text('Order successful!'),
+                      ),
+                    );
+                  }
+                });
               },
             );
           }

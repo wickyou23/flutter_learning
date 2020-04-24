@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_complete_guide/data/middleware/product_middleware.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
 import 'package:flutter_complete_guide/models/product.dart';

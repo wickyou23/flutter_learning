@@ -9,14 +9,16 @@ abstract class TransactionEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class AddNewTransacionEvent extends TransactionEvent {
+class AddNewTransactionEvent extends TransactionEvent {
   final Cart cart;
 
-  AddNewTransacionEvent({@required this.cart});
+  AddNewTransactionEvent({@required this.cart});
 
   @override
   List<Object> get props => [cart];
 
   @override
-  String toString() => 'AddNewTransacionEvent { cart $cart }';
+  String toString() => 'AddNewTransactionEvent { cart $cart }';
 }
+
+class GetAllTransactionEvent extends TransactionEvent {}
