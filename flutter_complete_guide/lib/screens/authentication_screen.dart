@@ -33,10 +33,9 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                   Text(
                     'Welcome',
                     style: context.theme.textTheme.title.copyWith(
-                      fontSize: 45,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600
-                    ),
+                        fontSize: 45,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
                   ),
                   Text(
                     'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
@@ -196,12 +195,15 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                   ],
                 ),
               ),
-              child: IconButton(
-                icon: Icon(
-                  Icons.arrow_forward,
-                  color: Colors.white,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: FlatButton(
+                  child: Icon(
+                    Icons.arrow_forward,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {},
                 ),
-                onPressed: () {},
               ),
             ),
           ),
@@ -353,10 +355,7 @@ class _AuthFramePainter extends CustomPainter {
       )
       ..close();
 
-    canvas.drawPath(
-      path,
-      paintShadow
-    );
+    canvas.drawPath(path, paintShadow);
     canvas.drawPath(
       path,
       paint,
