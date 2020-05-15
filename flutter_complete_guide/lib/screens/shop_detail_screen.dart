@@ -50,7 +50,8 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     final isRemoved =
         cartItem == null ? false : (_quantity < cartItem.quantity);
     if (_quantity == cartItem?.quantity) {
-      _isPopping = context.navigator.pop();
+      _isPopping = true;
+      context.navigator.pop();
       return;
     }
 
@@ -77,7 +78,8 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
           );
     }
 
-    _isPopping = context.navigator.pop();
+    _isPopping = true;
+    context.navigator.pop();
   }
 
   @override
@@ -103,7 +105,8 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
             listener: (ctx, state) {
               if (state is RemoveProductState) {
                 if (state.productId == state.productId) {
-                  _isPopping = context.navigator.pop();
+                  _isPopping = true;
+                  context.navigator.pop();
                 }
               }
             },
@@ -148,7 +151,8 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
               color: Colors.white,
               iconSize: 28,
               onPressed: () {
-                _isPopping = context.navigator.pop();
+                _isPopping = true;
+                context.navigator.pop();
               },
             ),
             Text(
@@ -203,7 +207,8 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
               icon: Icon(Icons.arrow_back_ios),
               color: Colors.white,
               onPressed: () {
-                _isPopping = context.navigator.pop();
+                _isPopping = true;
+                context.navigator.pop();
               },
             ),
           ),

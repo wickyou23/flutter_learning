@@ -40,7 +40,8 @@ class _CartScreenState extends State<CartScreen> {
           listener: (_, state) {
             if (state is CartReadyState) {
               if (state.cart.cartItems.isEmpty) {
-                _isPoping = context.navigator.pop();
+                _isPoping = true;
+                context.navigator.pop();
               }
             }
 
@@ -64,7 +65,8 @@ class _CartScreenState extends State<CartScreen> {
         BlocListener<TransactionBloc, TransactionState>(
           listener: (_, state) {
             if (state is AddNewTransactionSuccessState) {
-              _isPoping = context.navigator.pop(true);
+              _isPoping = true;
+              context.navigator.pop(true);
             } else if (state is AddNewTransactionFailedState) {
               _isOrdering = false;
               _scaffoldKey.currentState.showSnackBar(

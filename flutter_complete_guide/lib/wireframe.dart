@@ -6,6 +6,7 @@ import 'package:flutter_complete_guide/data/repository/product_repository.dart';
 import 'package:flutter_complete_guide/data/repository/transaction_repository.dart';
 import 'package:flutter_complete_guide/bloc/transaction/transaction_bloc.dart';
 import 'package:flutter_complete_guide/models/product.dart';
+import 'package:flutter_complete_guide/screens/authentication_screen.dart';
 import 'package:flutter_complete_guide/screens/cart_screen.dart';
 import 'package:flutter_complete_guide/screens/edit_product_screen.dart';
 import 'package:flutter_complete_guide/screens/product_managed_screen.dart';
@@ -16,10 +17,11 @@ import 'package:flutter_complete_guide/utils/extension.dart';
 
 class AppWireFrame {
   static final Map<String, WidgetBuilder> routes = {
-    '/': (_) => BlocProvider(
-          create: (_) => ProductBloc(productRepository: ProductRepository()),
-          child: ShopScreen(),
-        ),
+    '/': (_) => AuthenticationScreen(),
+    // '/': (_) => BlocProvider(
+    //       create: (_) => ProductBloc(productRepository: ProductRepository()),
+    //       child: ShopScreen(),
+    //     ),
     '/shop-detail-screen': (ctx) => ShopDetailScreen(),
     '/cart-screen': (_) => BlocProvider(
           create: (ctx) => TransactionBloc(
