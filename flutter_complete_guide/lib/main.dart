@@ -1,10 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_complete_guide/bloc/auth/auth_bloc.dart';
 import 'package:flutter_complete_guide/bloc/cart/cart_bloc.dart';
+import 'package:flutter_complete_guide/bloc/product/product_bloc.dart';
+import 'package:flutter_complete_guide/data/repository/auth_repository.dart';
 import 'package:flutter_complete_guide/data/repository/cart_repository.dart';
+import 'package:flutter_complete_guide/data/repository/product_repository.dart';
+import 'package:flutter_complete_guide/screens/authentication_screen.dart';
+import 'package:flutter_complete_guide/screens/shop_screen.dart';
 import 'package:flutter_complete_guide/wireframe.dart';
 import 'bloc/simple_bloc_delegate.dart';
+import 'package:bloc/bloc.dart';
 
 // import 'package:flutter/services.dart';
 
@@ -22,8 +29,15 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => CartBloc(cartRep: CartRepository()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<CartBloc>(
+          create: (_) => CartBloc(cartRep: CartRepository()),
+        ),
+        BlocProvider<AuthBloc>(
+          create: (_) => AuthBloc(),
+        )
+      ],
       child: MaterialApp(
         theme: ThemeData(
           primarySwatch: Colors.purple,
@@ -42,6 +56,27 @@ class MyApp extends StatelessWidget {
                   fontFamily: 'NunitoSans',
                 ),
               ),
+        ),
+        home: FutureBuilder(
+          future: AuthRepository().getCurrentUser(),
+          builder: (_, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasData) {
+                return BlocProvider(
+                  create: (_) => ProductBloc(
+                    productRepository: ProductRepository(),
+                  ),
+                  child: ShopScreen(),
+                );
+              } else {
+                return AuthenticationScreen();
+              }
+            } else {
+              return Container(
+                color: Colors.white,
+              );
+            }
+          },
         ),
         routes: AppWireFrame.routes,
       ),

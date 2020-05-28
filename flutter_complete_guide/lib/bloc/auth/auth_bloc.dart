@@ -16,6 +16,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Stream<AuthState> mapEventToState(AuthEvent event) async* {
     if (event is AuthSignupEvent) {
       yield* _mapToAuthSignupEvent(event);
+    } else if (event is AuthSigninEvent) {
+      yield* _mapToAuthSigninEvent(event);
     }
   }
 
@@ -26,8 +28,34 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Stream<AuthState> _mapToAuthSignupEvent(AuthSignupEvent event) async* {
-    yield AuthSignupProcessingState();
-    ResponseState res = await AuthMiddleware().signup(
+    yield AuthProcessingState();
+    ResponseState signupRes = await AuthMiddleware().signup(
+      email: event.email,
+      password: event.password,
+    );
+
+    if (signupRes is ResponseSuccessState<AuthUser>) {
+      AuthUser user = signupRes.responseData;
+      ResponseState profileRes = await AuthMiddleware().updateProfile(
+        user: user,
+        name: event.userName,
+      );
+
+      if (profileRes is ResponseSuccessState<AuthUser>) {
+        user = profileRes.responseData;
+      }
+
+      await repo.setCurrentUser(user);
+      yield AuthSignupSuccessState();
+      yield AuthReadyState(user);
+    } else if (signupRes is ResponseFailedState) {
+      yield AuthSignupFailedState(failedState: signupRes);
+    }
+  }
+
+  Stream<AuthState> _mapToAuthSigninEvent(AuthSigninEvent event) async* {
+    yield AuthProcessingState();
+    ResponseState res = await AuthMiddleware().signin(
       email: event.email,
       password: event.password,
     );
@@ -35,8 +63,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (res is ResponseSuccessState<AuthUser>) {
       await repo.setCurrentUser(res.responseData);
       yield AuthSigninSuccessState();
-    } else if (res is ResponseFailedState) {
-      yield AuthSignupFailedState(failedState: res);
+      yield AuthReadyState(res.responseData);
+    }
+    else if (res is ResponseFailedState) {
+      yield AuthSigninFailedState(failedState: res);
     }
   }
 }

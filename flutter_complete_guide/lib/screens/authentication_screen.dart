@@ -1,8 +1,10 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_complete_guide/data/middleware/authentication_middleware.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_complete_guide/bloc/auth/auth_bloc.dart';
+import 'package:flutter_complete_guide/bloc/auth/auth_event.dart';
+import 'package:flutter_complete_guide/bloc/auth/auth_state.dart';
 import 'package:flutter_complete_guide/utils/constant.dart';
 import 'package:flutter_complete_guide/utils/extension.dart';
 
@@ -25,6 +27,13 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
       return;
     }
 
+    context.bloc<AuthBloc>().add(
+          AuthSigninEvent(
+            email: _emailController.text,
+            password: _passController.text,
+          ),
+        );
+
     _scaffoldKey.currentState.showSnackBar(
       SnackBar(
         content: Text('Login processed'),
@@ -37,10 +46,13 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
       return;
     }
 
-    AuthMiddleware().signup(
-      email: _emailController.text,
-      password: _passController.text,
-    );
+    context.bloc<AuthBloc>().add(
+          AuthSignupEvent(
+            email: _emailController.text,
+            password: _passController.text,
+            userName: _userNameController.text,
+          ),
+        );
 
     _scaffoldKey.currentState.showSnackBar(
       SnackBar(
@@ -51,82 +63,90 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      resizeToAvoidBottomPadding: false,
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: Container(
-          child: Stack(
-            children: <Widget>[
-              _background(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      constraints: BoxConstraints(
-                        maxHeight: context.media.viewPadding.top + 40,
-                        minHeight: context.media.viewPadding.top + 25,
-                      ),
-                    ),
-                    Text(
-                      'Wellcome',
-                      style: context.theme.textTheme.title.copyWith(
-                          fontSize: 45,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-                      style: context.theme.textTheme.title.copyWith(
-                        fontSize: 15,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    _authenForm(),
-                    SizedBox(height: 40),
-                    Expanded(
-                      child: Container(
-                        child: Column(
-                          children: <Widget>[
-                            Expanded(child: Container()),
-                            Container(
-                              width: 220,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  _thirdPartyLoginButton(
-                                    'assets/images/fb_logo.png',
-                                    onPressed: () {},
-                                  ),
-                                  _thirdPartyLoginButton(
-                                    'assets/images/google_logo.png',
-                                    onPressed: () {},
-                                  ),
-                                  _thirdPartyLoginButton(
-                                    'assets/images/twitter_logo.png',
-                                    onPressed: () {},
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 40,
-                            ),
-                          ],
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (ctx, state) {
+        if (state is AuthSignupSuccessState 
+        || state is AuthSigninSuccessState) {
+          ctx.navigator.pushReplacementNamed('/dashboard');
+        }
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        resizeToAvoidBottomPadding: false,
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Container(
+            child: Stack(
+              children: <Widget>[
+                _background(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        constraints: BoxConstraints(
+                          maxHeight: context.media.viewPadding.top + 40,
+                          minHeight: context.media.viewPadding.top + 25,
                         ),
                       ),
-                    ),
-                  ],
+                      Text(
+                        'Wellcome',
+                        style: context.theme.textTheme.title.copyWith(
+                            fontSize: 45,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+                        style: context.theme.textTheme.title.copyWith(
+                          fontSize: 15,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: 30),
+                      _authenForm(),
+                      SizedBox(height: 40),
+                      Expanded(
+                        child: Container(
+                          child: Column(
+                            children: <Widget>[
+                              Expanded(child: Container()),
+                              Container(
+                                width: 220,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    _thirdPartyLoginButton(
+                                      'assets/images/fb_logo.png',
+                                      onPressed: () {},
+                                    ),
+                                    _thirdPartyLoginButton(
+                                      'assets/images/google_logo.png',
+                                      onPressed: () {},
+                                    ),
+                                    _thirdPartyLoginButton(
+                                      'assets/images/twitter_logo.png',
+                                      onPressed: () {},
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 40,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -282,6 +302,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                     color: Colors.white,
                   ),
                   onPressed: () {
+                    FocusScope.of(context).unfocus();
                     if (_isSignin) {
                       _handleSignIn();
                     } else {
@@ -305,16 +326,16 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
         child: Column(
           children: <Widget>[
             _textField(
-              controller: _userNameController,
-              placeHolder: 'username',
+              controller: _emailController,
+              placeHolder: 'email',
               prefixIcon: Icon(Icons.perm_identity),
               validator: (string) {
                 if (string.isEmpty) {
-                  return 'Please enter a username';
+                  return 'Please enter a email';
                 }
 
-                if (string.length <= 6) {
-                  return 'The username must be larger than 6 characters';
+                if (!string.contains(RegExp(Constaint.emailRex))) {
+                  return 'The email is invalid';
                 }
 
                 return null;

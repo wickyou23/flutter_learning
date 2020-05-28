@@ -17,7 +17,7 @@ import 'package:flutter_complete_guide/utils/extension.dart';
 
 class AppWireFrame {
   static final Map<String, WidgetBuilder> routes = {
-    '/': (_) => BlocProvider(
+    '/dashboard': (_) => BlocProvider(
           create: (_) => ProductBloc(productRepository: ProductRepository()),
           child: ShopScreen(),
         ),

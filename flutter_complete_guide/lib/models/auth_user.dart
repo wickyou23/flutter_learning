@@ -6,6 +6,7 @@ class AuthUser {
   final String refreshToken;
   final double expiresIn;
   final String localId;
+  final String displayName;
 
   AuthUser._internal(
     this.idToken,
@@ -13,6 +14,7 @@ class AuthUser {
     this.refreshToken,
     this.expiresIn,
     this.localId,
+    this.displayName,
   );
 
   factory AuthUser.fromJson({@required Map<String, dynamic> value}) {
@@ -22,6 +24,7 @@ class AuthUser {
       value['refreshToken'],
       double.parse(value['expiresIn']),
       value['localId'],
+      value['displayName'] ?? '',
     );
   }
 
@@ -32,6 +35,20 @@ class AuthUser {
       'refreshToken': this.refreshToken,
       'expiresIn': '${this.expiresIn}',
       'localId': this.localId,
+      'displayName': this.displayName,
     };
+  }
+
+  AuthUser copyWith({
+    String displayName,
+  }) {
+    return AuthUser._internal(
+      this.idToken,
+      this.email,
+      this.refreshToken,
+      this.expiresIn,
+      this.localId,
+      displayName ?? '',
+    );
   }
 }

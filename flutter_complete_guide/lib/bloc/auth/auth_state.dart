@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
+import 'package:flutter_complete_guide/models/auth_user.dart';
 
 abstract class AuthState extends Equatable {
   const AuthState();
@@ -11,9 +12,21 @@ abstract class AuthState extends Equatable {
 
 class AuthInitializeState extends AuthState {}
 
-// SIGNUP state
+class AuthReadyState extends AuthState {
+  final AuthUser crUser;
 
-class AuthSignupProcessingState extends AuthState {}
+  AuthReadyState(this.crUser);
+
+  @override
+  List<Object> get props => [crUser];
+
+  @override
+  String toString() => 'AuthReadyState { crUser: $crUser }';
+}
+
+class AuthProcessingState extends AuthState {}
+
+// SIGNUP state
 
 class AuthSignupSuccessState extends AuthState {}
 
@@ -30,8 +43,6 @@ class AuthSignupFailedState extends AuthState {
 }
 
 // SIGNIN state
-
-class AuthSigninProcessingState extends AuthState {}
 
 class AuthSigninSuccessState extends AuthState {}
 
