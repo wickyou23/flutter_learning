@@ -17,11 +17,10 @@ import 'package:flutter_complete_guide/utils/extension.dart';
 
 class AppWireFrame {
   static final Map<String, WidgetBuilder> routes = {
-    '/': (_) => AuthenticationScreen(),
-    // '/': (_) => BlocProvider(
-    //       create: (_) => ProductBloc(productRepository: ProductRepository()),
-    //       child: ShopScreen(),
-    //     ),
+    '/': (_) => BlocProvider(
+          create: (_) => ProductBloc(productRepository: ProductRepository()),
+          child: ShopScreen(),
+        ),
     '/shop-detail-screen': (ctx) => ShopDetailScreen(),
     '/cart-screen': (_) => BlocProvider(
           create: (ctx) => TransactionBloc(

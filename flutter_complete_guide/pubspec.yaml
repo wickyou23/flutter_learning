@@ -30,6 +30,7 @@ dependencies:
   flutter_bloc: ^3.2.0
   equatable: ^1.1.1
   dio: ^3.0.9
+  shared_preferences: ^0.5.7+3
 
 dev_dependencies:
   flutter_test:
@@ -51,6 +52,9 @@ flutter:
   assets:
    - assets/images/background_image.jpg
    - assets/images/empty_data.png
+   - assets/images/twitter_logo.png
+   - assets/images/fb_logo.png
+   - assets/images/google_logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

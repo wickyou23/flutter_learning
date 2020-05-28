@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 class NetworkCommon {
   static final NetworkCommon _singleton = new NetworkCommon._internal();
+  static final fbApiKey = 'AIzaSyDYw_z89ZTg1CeWhNxc0wkfntUYR9iBx5s';
 
   factory NetworkCommon() {
     return _singleton;
@@ -112,6 +113,38 @@ class NetworkCommon {
     }, onError: (DioError e) {
       // Do something with response error
       return e; //continue
+    }));
+
+    return dio;
+  }
+
+  Dio get authDio {
+    Dio dio = new Dio();
+    // Set default configs
+    dio.options.baseUrl = 'https://identitytoolkit.googleapis.com/v1';
+    dio.options.connectTimeout = 50000; //5s
+    dio.options.receiveTimeout = 30000;
+    dio.interceptors
+        .add(InterceptorsWrapper(onRequest: (RequestOptions options) async {
+      print("Pre request:${options.method},${options.baseUrl}${options.path}");
+      print("Pre request:${options.headers.toString()}");
+      return options;
+    }, onResponse: (Response response) async {
+      final int statusCode = response.statusCode;
+      if (statusCode == 200) {
+        if (response.request.path == "login/") {
+          final String jsonBody = response.data;
+          final JsonDecoder _decoder = new JsonDecoder();
+          final resultContainer = _decoder.convert(jsonBody);
+          final int code = resultContainer['code'];
+          if (code == 0) {
+          }
+        }
+      } else if (statusCode == 401) {
+      }
+      return response;
+    }, onError: (DioError e) {
+      return e;
     }));
 
     return dio;
