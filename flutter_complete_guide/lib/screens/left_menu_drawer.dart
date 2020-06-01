@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_complete_guide/utils/extension.dart';
+import 'package:flutter_complete_guide/wireframe.dart';
 
 class LeftMenuDrawer extends StatelessWidget {
   @override
@@ -112,6 +113,36 @@ class LeftMenuDrawer extends StatelessWidget {
                     context.navigator
                         .pushReplacementNamed('/product-managed-screen');
                   }
+                },
+              ),
+              Divider(
+                height: 1,
+                color: Colors.grey.withPercentAlpha(0.4),
+              ),
+              FlatButton(
+                child: Container(
+                  height: 60,
+                  width: double.infinity,
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Row(
+                    children: <Widget>[
+                      Icon(Icons.exit_to_app),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        'Logout',
+                        style: context.theme.textTheme.title.copyWith(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                onPressed: () {
+                  AppWireFrame.logout();
+                  context.navigator.pushReplacementNamed('/authentication');
                 },
               ),
               Divider(

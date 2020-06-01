@@ -1,11 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter_complete_guide/data/repository/base_repository.dart';
 import 'package:flutter_complete_guide/models/auth_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 AuthUser _auth;
 
-class AuthRepository {
+class AuthRepository implements BaseRepository {
   static final AuthRepository _singleton = AuthRepository._internal();
 
   factory AuthRepository() {
@@ -33,5 +34,12 @@ class AuthRepository {
     if (jsonString.isNotEmpty) {
       sharePre.setString('AuthUser', jsonString);
     }
+  }
+
+  @override
+  Future<void> clean() async {
+    SharedPreferences sharePre = await SharedPreferences.getInstance();
+    sharePre.remove('AuthUser');
+    _auth = null;
   }
 }

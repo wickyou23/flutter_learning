@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 
 class Product {
@@ -8,7 +6,7 @@ class Product {
   final String description;
   final double price;
   final String imageUrl;
-  bool isFavorite;
+  final bool isFavorite;
 
   Product({
     @required this.id,
@@ -43,7 +41,6 @@ class Product {
       'description': this.description,
       'price': this.price,
       'imageUrl': this.imageUrl,
-      'isFavorite': this.isFavorite,
     };
   }
 
@@ -55,7 +52,6 @@ class Product {
       description: values['description'],
       price: values['price'],
       imageUrl: values['imageUrl'],
-      isFavorite: values['isFavorite'],
     );
   }
 }

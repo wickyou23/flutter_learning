@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/bloc/cart/cart_bloc.dart';
 import 'package:flutter_complete_guide/bloc/product/product_bloc.dart';
+import 'package:flutter_complete_guide/data/repository/auth_repository.dart';
+import 'package:flutter_complete_guide/data/repository/favorite_repository.dart';
 import 'package:flutter_complete_guide/data/repository/product_repository.dart';
 import 'package:flutter_complete_guide/data/repository/transaction_repository.dart';
 import 'package:flutter_complete_guide/bloc/transaction/transaction_bloc.dart';
@@ -17,6 +19,7 @@ import 'package:flutter_complete_guide/utils/extension.dart';
 
 class AppWireFrame {
   static final Map<String, WidgetBuilder> routes = {
+    '/authentication': (_) => AuthenticationScreen(),
     '/dashboard': (_) => BlocProvider(
           create: (_) => ProductBloc(productRepository: ProductRepository()),
           child: ShopScreen(),
@@ -47,4 +50,9 @@ class AppWireFrame {
       );
     },
   };
+
+  static void logout() {
+    FavoriteRepository().clean();
+    AuthRepository().clean();
+  }
 }

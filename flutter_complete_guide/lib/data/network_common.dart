@@ -53,7 +53,6 @@ class NetworkCommon {
 
       print("Pre request:${options.method},${options.baseUrl}${options.path}");
       print("Pre request:${options.headers.toString()}");
-
       return options; //continue
     }, onResponse: (Response response) async {
       // Do something with response data

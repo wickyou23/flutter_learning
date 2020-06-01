@@ -5,22 +5,18 @@ import 'package:flutter_complete_guide/bloc/product/product_event.dart';
 import 'package:flutter_complete_guide/bloc/product/product_item/product_item_event.dart';
 import 'package:flutter_complete_guide/bloc/product/product_item/product_item_state.dart';
 import 'package:flutter_complete_guide/bloc/product/product_state.dart';
-import 'package:flutter_complete_guide/data/middleware/product_middleware.dart';
+import 'package:flutter_complete_guide/data/middleware/favorite_middleware.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
-import 'package:flutter_complete_guide/data/repository/product_repository.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 
 class ProductItemBloc extends Bloc<ProductItemEvent, ProductItemState> {
-  ProductRepository _productRepository;
   Product product;
   ProductBloc productBloc;
 
   ProductItemBloc({
     @required this.product,
     @required this.productBloc,
-  }) {
-    _productRepository = ProductRepository();
-  }
+  });
 
   @override
   ProductItemState get initialState => ProductItemReadyState(product: this.product);
@@ -39,12 +35,11 @@ class ProductItemBloc extends Bloc<ProductItemEvent, ProductItemState> {
   }
 
   Stream<ProductItemState> _mapToSetFavoriteEvent(SetFavoriteEvent event) async* {
-    product.isFavorite = event.isFavorite;
     product = product.copyWith(isFavorite: event.isFavorite);
     yield ProductItemReadyState(product: product);
     // Used to save to db or local memory
     // var response = await _productRepository.setIsFavorite(product);
-    var response = await ProductMiddleware().updateFavoriteProduct(product);
+    var response = await FavoriteMiddleware().updateFavoriteProduct(product);
     if (response is ResponseFailedState) {
       product = product.copyWith(isFavorite: !event.isFavorite);
       yield ProductItemSetFavoriteFailedState(responseErrorState: response);

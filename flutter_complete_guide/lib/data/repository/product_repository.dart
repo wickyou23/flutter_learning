@@ -1,3 +1,4 @@
+import 'package:flutter_complete_guide/data/middleware/favorite_middleware.dart';
 import 'package:flutter_complete_guide/data/middleware/product_middleware.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
 import 'package:flutter_complete_guide/models/product.dart';
@@ -8,7 +9,7 @@ class ProductRepository {
   List<Product> get getAllStoredProduct => [..._dummyData.values.toList()];
 
   List<Product> get getFavoriteProduct =>
-      [..._dummyData.values.toList().where((v) => v.isFavorite)];
+      [..._dummyData.values.toList().where((v) => true)];
 
   List<Product> getProductByIds(List<String> ids) {
     return _dummyData.values.toList().where((v) => ids.contains(v.id));
@@ -21,13 +22,9 @@ class ProductRepository {
   }
 
   Future<ResponseState> setIsFavorite(Product product) async {
-    var response = await ProductMiddleware().updateFavoriteProduct(product);
+    var response = await FavoriteMiddleware().updateFavoriteProduct(product);
     var crResponse = response;
     if (crResponse is ResponseSuccessState<Product>) {
-      _dummyData.values
-          .toList()
-          .firstWhere((v) => v.id == product.id)
-          .isFavorite = product.isFavorite;
       return crResponse;
     } else {
       return crResponse;
