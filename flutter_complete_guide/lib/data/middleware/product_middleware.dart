@@ -1,6 +1,5 @@
 import 'package:flutter_complete_guide/data/middleware/favorite_middleware.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
-import 'package:flutter_complete_guide/data/repository/auth_repository.dart';
 import 'package:flutter_complete_guide/data/repository/favorite_repository.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 import 'package:dio/dio.dart';
@@ -16,11 +15,10 @@ class ProductMiddleware {
 
   Future<ResponseState> getAllProduct() async {
     try {
-      var user = await AuthRepository().getCurrentUser();
       var _ = await FavoriteMiddleware().getFavoriteProduct();
       var favoriteProduct = FavoriteRepository().favoriteProducts;
       var response =
-          await NetworkCommon().dio.get('/products.json?auth=${user.idToken}');
+          await NetworkCommon().dio.get('/products.json');
       var data = response.data as Map<String, dynamic>;
       if (data.isNotEmpty) {
         Map<String, Product> products = {};
@@ -53,9 +51,8 @@ class ProductMiddleware {
 
   Future<ResponseState> addNewProduct(Product newProduct) async {
     try {
-      var user = await AuthRepository().getCurrentUser();
       var response = await NetworkCommon().dio.post(
-            '/products.json?auth=${user.idToken}',
+            '/products.json',
             data: newProduct.toJson(),
           );
       var data = response.data as Map<String, dynamic>;
@@ -82,9 +79,8 @@ class ProductMiddleware {
 
   Future<ResponseState> updateProduct(Product newProduct) async {
     try {
-      var user = await AuthRepository().getCurrentUser();
       var response = await NetworkCommon().dio.patch(
-            '/favorites/${newProduct.id}.json?auth=${user.idToken}',
+            '/favorites/${newProduct.id}.json',
             data: newProduct.toJson(),
           );
       var data = response.data as Map<String, dynamic>;
@@ -109,9 +105,8 @@ class ProductMiddleware {
 
   Future<ResponseState> deleteProduct(String productId) async {
     try {
-      var user = await AuthRepository().getCurrentUser();
       var response = await NetworkCommon().dio.delete(
-            '/products/$productId.json?auth=${user.idToken}',
+            '/products/$productId.json',
           );
       return ResponseSuccessState(
         statusCode: response.statusCode,
@@ -127,9 +122,8 @@ class ProductMiddleware {
 
   Future<ResponseState> getProductById(String productId) async {
     try {
-      var user = await AuthRepository().getCurrentUser();
       var response = await NetworkCommon().dio.get(
-            '/products/$productId.json?auth=${user.idToken}',
+            '/products/$productId.json',
           );
       var data = response.data as Map<String, dynamic>;
       if (data != null && data.isNotEmpty) {

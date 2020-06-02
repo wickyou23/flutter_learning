@@ -16,7 +16,7 @@ class TransactionMiddleware {
   Future<ResponseState> getAllTransaction() async {
     try {
       var user = await AuthRepository().getCurrentUser();
-      var response = await NetworkCommon().dio.get('/transactions/${user.localId}.json?auth=${user.idToken}');
+      var response = await NetworkCommon().dio.get('/transactions/${user.localId}.json');
       var data = response.data as Map<String, dynamic>;
       if (data != null || data?.isNotEmpty == true) {
         List<Transaction> transactions = [];
@@ -51,7 +51,7 @@ class TransactionMiddleware {
       var user = await AuthRepository().getCurrentUser();
       Transaction newTransaction = cart.createNewTransaction();
       var response = await NetworkCommon().dio.post(
-            '/transactions/${user.localId}.json?auth=${user.idToken}',
+            '/transactions/${user.localId}.json',
             data: newTransaction.toJson(),
           );
       var data = response.data as Map<String, dynamic>;

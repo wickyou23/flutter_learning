@@ -9,6 +9,7 @@ import 'package:flutter_complete_guide/data/repository/cart_repository.dart';
 import 'package:flutter_complete_guide/data/repository/product_repository.dart';
 import 'package:flutter_complete_guide/screens/authentication_screen.dart';
 import 'package:flutter_complete_guide/screens/shop_screen.dart';
+import 'package:flutter_complete_guide/services/navigation_service.dart';
 import 'package:flutter_complete_guide/wireframe.dart';
 import 'bloc/simple_bloc_delegate.dart';
 import 'package:bloc/bloc.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         )
       ],
       child: MaterialApp(
+        navigatorKey: NavigationService().navigatorKey,
         theme: ThemeData(
           primarySwatch: Colors.purple,
           fontFamily: 'NunitoSans',

@@ -18,7 +18,7 @@ class FavoriteMiddleware {
       var user = await AuthRepository().getCurrentUser();
       var response = await NetworkCommon()
           .dio
-          .get('/favorite/${user.localId}.json?auth=${user.idToken}');
+          .get('/favorite/${user.localId}.json');
       
       List<String> productIds = List<String>.from(response.data ?? []);
       FavoriteRepository().favoriteProducts = productIds;
@@ -46,7 +46,7 @@ class FavoriteMiddleware {
       }
 
       var response = await NetworkCommon().dio.put(
-            '/favorite/${user.localId}.json?auth=${user.idToken}',
+            '/favorite/${user.localId}.json',
             data: fRepo.favoriteProducts,
           );
       return ResponseSuccessState(

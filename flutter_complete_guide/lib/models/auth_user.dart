@@ -40,13 +40,16 @@ class AuthUser {
   }
 
   AuthUser copyWith({
+    String idToken,
+    double expiresIn,
+    String refreshToken,
     String displayName,
   }) {
     return AuthUser._internal(
-      this.idToken,
+      idToken ?? this.idToken,
       this.email,
-      this.refreshToken,
-      this.expiresIn,
+      refreshToken ?? this.refreshToken,
+      expiresIn ?? this.expiresIn,
       this.localId,
       displayName ?? '',
     );
