@@ -82,7 +82,7 @@ class NetworkCommon {
                 ifAbsent: () => newUser.idToken,
               );
 
-              return await dio.request(ro.path, options: ro);
+              return await this.dio.request(ro.path, options: ro);
             }
             else {
               AppWireFrame.logout();
@@ -108,16 +108,18 @@ class NetworkCommon {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (RequestOptions options) async {
-          var preQueryParam = options.queryParameters;
-          options.queryParameters = preQueryParam.update(
+          var preQueryParams = options.queryParameters;
+          preQueryParams.update(
             'key',
             (_) => NetworkCommon.fbApiKey,
             ifAbsent: () => NetworkCommon.fbApiKey,
           );
+          options.queryParameters = preQueryParams;
 
           print("PreReq:${options.method},${options.baseUrl}${options.path}\n");
           print("ReqQueryParam:${options.queryParameters.toString()}\n");
           print("ReqHeader:${options.headers.toString()}\n");
+          
           return options;
         },
         onResponse: (Response response) async {

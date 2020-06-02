@@ -38,10 +38,10 @@ class LeftMenuDrawer extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  if (context.route.settings.name == '/') {
+                  if (context.route.settings.name == '/dashboard') {
                     context.navigator.pop();
                   } else {
-                    context.navigator.pushReplacementNamed('/');
+                    context.navigator.pushReplacementNamed('/dashboard');
                   }
                 },
               ),
