@@ -64,7 +64,6 @@ class NetworkCommon {
           return options; //continue
         },
         onResponse: (Response response) async {
-          print("ResFrom:${response.request.method},${response.request.baseUrl}${response.request.path}");
           print("ResFrom:${response.toString()}");
           return response; // continue
         },
@@ -119,10 +118,11 @@ class NetworkCommon {
           print("PreReq:${options.method},${options.baseUrl}${options.path}\n");
           print("ReqQueryParam:${options.queryParameters.toString()}\n");
           print("ReqHeader:${options.headers.toString()}\n");
-          
+
           return options;
         },
         onResponse: (Response response) async {
+          print("ResFrom:${response.toString()}");
           return response;
         },
         onError: (DioError e) {
@@ -158,6 +158,7 @@ class NetworkCommon {
           return options;
         },
         onResponse: (Response response) async {
+          print("ResFrom:${response.toString()}");
           return response;
         },
         onError: (DioError e) {

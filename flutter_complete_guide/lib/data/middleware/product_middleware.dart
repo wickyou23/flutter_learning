@@ -15,10 +15,13 @@ class ProductMiddleware {
 
   Future<ResponseState> getAllProduct() async {
     try {
-      var _ = await FavoriteMiddleware().getFavoriteProduct();
+      var favoriteRepo = FavoriteRepository().favoriteProducts;
+      if (favoriteRepo.isEmpty) {
+        await FavoriteMiddleware().getFavoriteProduct();
+      }
+
       var favoriteProduct = FavoriteRepository().favoriteProducts;
-      var response =
-          await NetworkCommon().dio.get('/products.json');
+      var response = await NetworkCommon().dio.get('/products.json');
       var data = response.data as Map<String, dynamic>;
       if (data.isNotEmpty) {
         Map<String, Product> products = {};

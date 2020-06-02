@@ -1,13 +1,13 @@
 import 'package:flutter_complete_guide/data/repository/base_repository.dart';
 
-List<String> _favoriteProducts = [];
+Set<String> _favoriteProducts = {};
 
 class FavoriteRepository implements BaseRepository {
-  List<String> get favoriteProducts {
+  Set<String> get favoriteProducts {
     return _favoriteProducts;
   }
 
-  set favoriteProducts(List<String> newFavorite) {
+  set favoriteProducts(Set<String> newFavorite) {
     _favoriteProducts = newFavorite;
   }
 
@@ -25,6 +25,6 @@ class FavoriteRepository implements BaseRepository {
 
   @override
   void clean() {
-    _favoriteProducts = [];
+    _favoriteProducts = {};
   }
 }

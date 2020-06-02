@@ -16,12 +16,11 @@ class FavoriteMiddleware {
   Future<ResponseState> getFavoriteProduct() async {
     try {
       var user = await AuthRepository().getCurrentUser();
-      var response = await NetworkCommon()
-          .dio
-          .get('/favorite/${user.localId}.json');
-      
+      var response =
+          await NetworkCommon().dio.get('/favorite/${user.localId}.json');
+
       List<String> productIds = List<String>.from(response.data ?? []);
-      FavoriteRepository().favoriteProducts = productIds;
+      FavoriteRepository().favoriteProducts = Set<String>.of(productIds);
       return ResponseSuccessState(
         statusCode: response.statusCode,
         responseData: productIds,
@@ -47,11 +46,11 @@ class FavoriteMiddleware {
 
       var response = await NetworkCommon().dio.put(
             '/favorite/${user.localId}.json',
-            data: fRepo.favoriteProducts,
+            data: fRepo.favoriteProducts.toList(),
           );
       return ResponseSuccessState(
         statusCode: response.statusCode,
-        responseData: fRepo,
+        responseData: newProduct,
       );
     } on DioError catch (e) {
       fRepo.favoriteProducts = oldFavorite;

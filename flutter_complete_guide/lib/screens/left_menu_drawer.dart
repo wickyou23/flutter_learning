@@ -16,27 +16,10 @@ class LeftMenuDrawer extends StatelessWidget {
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
-              FlatButton(
-                child: Container(
-                  height: 60,
-                  width: double.infinity,
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Row(
-                    children: <Widget>[
-                      Icon(Icons.home),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        'Home',
-                        style: context.theme.textTheme.title.copyWith(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              _setupRow(
+                context,
+                title: 'Home',
+                icon: Icon(Icons.home),
                 onPressed: () {
                   if (context.route.settings.name == '/dashboard') {
                     context.navigator.pop();
@@ -49,27 +32,10 @@ class LeftMenuDrawer extends StatelessWidget {
                 height: 1,
                 color: Colors.grey.withPercentAlpha(0.4),
               ),
-              FlatButton(
-                child: Container(
-                  height: 60,
-                  width: double.infinity,
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Row(
-                    children: <Widget>[
-                      Icon(Icons.history),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        'History',
-                        style: context.theme.textTheme.title.copyWith(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              _setupRow(
+                context,
+                title: 'History',
+                icon: Icon(Icons.history),
                 onPressed: () {
                   if (context.route.settings.name ==
                       '/transaction-history-screen') {
@@ -84,27 +50,10 @@ class LeftMenuDrawer extends StatelessWidget {
                 height: 1,
                 color: Colors.grey.withPercentAlpha(0.4),
               ),
-              FlatButton(
-                child: Container(
-                  height: 60,
-                  width: double.infinity,
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Row(
-                    children: <Widget>[
-                      Icon(Icons.settings),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        'Setting',
-                        style: context.theme.textTheme.title.copyWith(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              _setupRow(
+                context,
+                title: 'Setting',
+                icon: Icon(Icons.settings),
                 onPressed: () {
                   if (context.route.settings.name ==
                       '/product-managed-screen') {
@@ -119,27 +68,10 @@ class LeftMenuDrawer extends StatelessWidget {
                 height: 1,
                 color: Colors.grey.withPercentAlpha(0.4),
               ),
-              FlatButton(
-                child: Container(
-                  height: 60,
-                  width: double.infinity,
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Row(
-                    children: <Widget>[
-                      Icon(Icons.exit_to_app),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        'Logout',
-                        style: context.theme.textTheme.title.copyWith(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              _setupRow(
+                context,
+                title: 'Logout',
+                icon: Icon(Icons.exit_to_app),
                 onPressed: () {
                   AppWireFrame.logout();
                   context.navigator.pushReplacementNamed('/authentication');
@@ -153,6 +85,32 @@ class LeftMenuDrawer extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _setupRow(BuildContext context, {String title, Icon icon, Function onPressed}) {
+    return FlatButton(
+      child: Container(
+        height: 60,
+        width: double.infinity,
+        alignment: AlignmentDirectional.centerStart,
+        child: Row(
+          children: <Widget>[
+            icon,
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              title,
+              style: context.theme.textTheme.title.copyWith(
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+      onPressed: onPressed,
     );
   }
 }

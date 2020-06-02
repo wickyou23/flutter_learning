@@ -30,10 +30,12 @@ class ProductLoadFailedState extends ProductState {
 
 class ProductLoadedState extends ProductState {
   final List<Product> products;
+  final List<Product> allProduct;
   final bool isFavoriteFilter;
 
   const ProductLoadedState({
     @required this.products,
+    @required this.allProduct,
     this.isFavoriteFilter = false,
   });
 

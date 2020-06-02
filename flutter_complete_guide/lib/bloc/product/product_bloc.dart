@@ -4,6 +4,7 @@ import 'package:flutter_complete_guide/bloc/product/product_event.dart';
 import 'package:flutter_complete_guide/bloc/product/product_state.dart';
 import 'package:flutter_complete_guide/data/middleware/product_middleware.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
+import 'package:flutter_complete_guide/data/repository/favorite_repository.dart';
 import 'package:flutter_complete_guide/data/repository/product_repository.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 
@@ -39,17 +40,29 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   }
 
   Stream<ProductState> _mapToFilterFavoriteEvent() async* {
-    yield ProductLoadedState(
-      products: productRepository.getFavoriteProduct,
-      isFavoriteFilter: true,
-    );
+    var currentState = this.state;
+    if (currentState is ProductLoadedState) {
+      var favoriteProductIds = FavoriteRepository().favoriteProducts;
+      var favoriteProducts = currentState.allProduct
+          .where((element) => favoriteProductIds.contains(element.id))
+          .toList();
+      yield ProductLoadedState(
+        products: favoriteProducts,
+        allProduct: currentState.allProduct,
+        isFavoriteFilter: true,
+      );
+    }
   }
 
   Stream<ProductState> _mapToFilterAllEvent() async* {
-    yield ProductLoadedState(
-      products: productRepository.getAllStoredProduct,
-      isFavoriteFilter: false,
-    );
+    var currentState = this.state;
+    if (currentState is ProductLoadedState) {
+      yield ProductLoadedState(
+        products: currentState.allProduct,
+        allProduct: currentState.allProduct,
+        isFavoriteFilter: false,
+      );
+    }
   }
 
   Stream<ProductState> _mapToAddNewProductEvent(
@@ -76,6 +89,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
       yield ProductLoadedState(
         products: crState.products,
+        allProduct: crState.products,
         isFavoriteFilter: crState.isFavoriteFilter,
       );
     }
@@ -91,12 +105,13 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       var response = await ProductMiddleware().updateProduct(event.product);
       if (response is ResponseSuccessState<Product>) {
         yield UpdatedProductState();
-        var idx = crState.products.indexWhere((v) => v.id == response.responseData.id);
+        var idx = crState.products
+            .indexWhere((v) => v.id == response.responseData.id);
         if (idx != -1) {
           crState.products[idx] = response.responseData;
         }
       }
-      
+
       // Used to save to db or local memory
       // yield ProductLoadedState(
       //   products: productRepository.getAllStoredProduct,
@@ -105,6 +120,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
       yield ProductLoadedState(
         products: crState.products,
+        allProduct: crState.products,
         isFavoriteFilter: crState.isFavoriteFilter,
       );
     }
@@ -122,7 +138,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         yield DeletedProductState();
         crState.products.removeWhere((v) => v.id == response.responseData);
       }
-      
+
       // Used to save to db or local memory
       // yield ProductLoadedState(
       //   products: productRepository.getAllStoredProduct,
@@ -131,6 +147,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
       yield ProductLoadedState(
         products: crState.products,
+        allProduct: crState.products,
         isFavoriteFilter: crState.isFavoriteFilter,
       );
     }
@@ -149,15 +166,17 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     var respState = await ProductMiddleware().getAllProduct();
     var crResponseState = respState;
     if (crResponseState is ResponseSuccessState<Map<String, dynamic>>) {
-      var products = crResponseState.responseData;
+      var products = crResponseState.responseData.values.toList();
       yield ProductLoadedState(
-        products: products.values.toList(),
+        products: products,
+        allProduct: products,
         isFavoriteFilter: isFavoriteFilter,
       );
     } else if (crResponseState is ResponseFailedState) {
       yield ProductLoadFailedState(failedState: crResponseState);
       yield ProductLoadedState(
         products: [],
+        allProduct: [],
         isFavoriteFilter: isFavoriteFilter,
       );
     }
