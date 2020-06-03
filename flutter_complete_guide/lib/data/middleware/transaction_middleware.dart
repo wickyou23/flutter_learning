@@ -1,4 +1,5 @@
 import 'package:flutter_complete_guide/data/network_common.dart';
+import 'package:flutter_complete_guide/data/network_response_state.dart';
 import 'package:flutter_complete_guide/data/repository/auth_repository.dart';
 import 'package:flutter_complete_guide/models/cart.dart';
 import 'package:flutter_complete_guide/models/transaction.dart';

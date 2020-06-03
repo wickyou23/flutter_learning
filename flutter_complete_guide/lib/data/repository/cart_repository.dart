@@ -1,5 +1,6 @@
 import 'package:flutter_complete_guide/data/middleware/product_middleware.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
+import 'package:flutter_complete_guide/data/network_response_state.dart';
 import 'package:flutter_complete_guide/data/repository/product_repository.dart';
 import 'package:flutter_complete_guide/models/cart.dart';
 import 'package:flutter_complete_guide/models/cart_item.dart';

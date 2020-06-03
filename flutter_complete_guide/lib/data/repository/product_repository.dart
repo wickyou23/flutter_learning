@@ -1,6 +1,7 @@
 import 'package:flutter_complete_guide/data/middleware/favorite_middleware.dart';
 import 'package:flutter_complete_guide/data/middleware/product_middleware.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
+import 'package:flutter_complete_guide/data/network_response_state.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 
 final Map<String, Product> _dummyData = {};
@@ -21,15 +22,15 @@ class ProductRepository {
         .firstWhere((v) => v.id == productId, orElse: () => null);
   }
 
-  Future<ResponseState> setIsFavorite(Product product) async {
-    var response = await FavoriteMiddleware().updateFavoriteProduct(product);
-    var crResponse = response;
-    if (crResponse is ResponseSuccessState<Product>) {
-      return crResponse;
-    } else {
-      return crResponse;
-    }
-  }
+  // Future<ResponseState> setIsFavorite(Product product) async {
+  //   var response = await FavoriteMiddleware().updateFavoriteProduct(product);
+  //   var crResponse = response;
+  //   if (crResponse is ResponseSuccessState<Product>) {
+  //     return crResponse;
+  //   } else {
+  //     return crResponse;
+  //   }
+  // }
 
   Future<ResponseState> getAllProduct() async {
     var response = await ProductMiddleware().getAllProduct();

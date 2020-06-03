@@ -7,6 +7,8 @@ import 'package:flutter_complete_guide/bloc/product/product_item/product_item_st
 import 'package:flutter_complete_guide/bloc/product/product_state.dart';
 import 'package:flutter_complete_guide/data/middleware/favorite_middleware.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
+import 'package:flutter_complete_guide/data/network_response_state.dart';
+import 'package:flutter_complete_guide/data/repository/favorite_repository.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 
 class ProductItemBloc extends Bloc<ProductItemEvent, ProductItemState> {
@@ -19,7 +21,8 @@ class ProductItemBloc extends Bloc<ProductItemEvent, ProductItemState> {
   });
 
   @override
-  ProductItemState get initialState => ProductItemReadyState(product: this.product);
+  ProductItemState get initialState =>
+      ProductItemReadyState(product: this.product);
 
   @override
   Stream<ProductItemState> mapEventToState(ProductItemEvent event) async* {
@@ -34,22 +37,37 @@ class ProductItemBloc extends Bloc<ProductItemEvent, ProductItemState> {
     return super.close();
   }
 
-  Stream<ProductItemState> _mapToSetFavoriteEvent(SetFavoriteEvent event) async* {
+  Stream<ProductItemState> _mapToSetFavoriteEvent(
+      SetFavoriteEvent event) async* {
     product = product.copyWith(isFavorite: event.isFavorite);
     yield ProductItemReadyState(product: product);
     // Used to save to db or local memory
     // var response = await _productRepository.setIsFavorite(product);
-    var response = await FavoriteMiddleware().updateFavoriteProduct(product);
-    if (response is ResponseFailedState) {
-      product = product.copyWith(isFavorite: !event.isFavorite);
-      yield ProductItemSetFavoriteFailedState(responseErrorState: response);
-      yield ProductItemReadyState(product: product);
+
+    var fRepo = FavoriteRepository();
+    var oldFavoriteProduct = Set<String>.from(fRepo.favoriteProducts);
+    if (fRepo.contains(product.id)) {
+      fRepo.removeFavoriteProduct(product.id);
+    } else {
+      fRepo.addNewFavoriteProduct(product.id);
     }
-    
+
     var crProductState = productBloc.state;
     if (crProductState is ProductLoadedState &&
         crProductState.isFavoriteFilter) {
       productBloc.add(ProductFilterFavoriteEvent());
+    }
+
+    var response = await FavoriteMiddleware().updateNewFavoriteProducts();
+    if (response is ResponseFailedState) {
+      fRepo.favoriteProducts = oldFavoriteProduct;
+      product = product.copyWith(isFavorite: !event.isFavorite);
+      yield ProductItemSetFavoriteFailedState(responseErrorState: response);
+      yield ProductItemReadyState(product: product);
+      if (crProductState is ProductLoadedState &&
+          crProductState.isFavoriteFilter) {
+        productBloc.add(ProductFilterFavoriteEvent());
+      }
     }
   }
 }

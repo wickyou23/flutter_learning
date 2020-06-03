@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
+import 'package:flutter_complete_guide/data/network_response_state.dart';
 import 'package:flutter_complete_guide/data/repository/auth_repository.dart';
 import 'package:flutter_complete_guide/models/auth_user.dart';
 

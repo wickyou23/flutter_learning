@@ -1,5 +1,6 @@
 import 'package:flutter_complete_guide/data/middleware/favorite_middleware.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
+import 'package:flutter_complete_guide/data/network_response_state.dart';
 import 'package:flutter_complete_guide/data/repository/favorite_repository.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 import 'package:dio/dio.dart';
@@ -46,7 +47,7 @@ class ProductMiddleware {
       }
     } on DioError catch (e) {
       return ResponseFailedState(
-        statusCode: e.response.statusCode,
+        statusCode: e.response.statusCode ?? -1,
         errorMessage: e.message,
       );
     }

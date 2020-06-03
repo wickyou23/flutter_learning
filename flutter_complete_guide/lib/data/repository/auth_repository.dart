@@ -33,6 +33,7 @@ class AuthRepository implements BaseRepository {
     var jsonString = jsonEncode(crUser.toMap());
     if (jsonString.isNotEmpty) {
       sharePre.setString('AuthUser', jsonString);
+      _auth = crUser;
     }
   }
 

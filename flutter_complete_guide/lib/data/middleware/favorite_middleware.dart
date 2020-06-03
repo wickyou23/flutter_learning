@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
+import 'package:flutter_complete_guide/data/network_response_state.dart';
 import 'package:flutter_complete_guide/data/repository/auth_repository.dart';
 import 'package:flutter_complete_guide/data/repository/favorite_repository.dart';
 import 'package:flutter_complete_guide/models/product.dart';
@@ -33,27 +34,19 @@ class FavoriteMiddleware {
     }
   }
 
-  Future<ResponseState> updateFavoriteProduct(Product newProduct) async {
-    var fRepo = FavoriteRepository();
-    var oldFavorite = fRepo.favoriteProducts;
+  Future<ResponseState> updateNewFavoriteProducts() async {
     try {
+      var fRepo = FavoriteRepository();
       var user = await AuthRepository().getCurrentUser();
-      if (fRepo.contains(newProduct.id)) {
-        fRepo.removeFavoriteProduct(newProduct.id);
-      } else {
-        fRepo.addNewFavoriteProduct(newProduct.id);
-      }
-
       var response = await NetworkCommon().dio.put(
-            '/favorite/${user.localId}.json',
+            '/favorite/${user.localId}.json123123',
             data: fRepo.favoriteProducts.toList(),
           );
       return ResponseSuccessState(
         statusCode: response.statusCode,
-        responseData: newProduct,
+        responseData: fRepo.favoriteProducts,
       );
     } on DioError catch (e) {
-      fRepo.favoriteProducts = oldFavorite;
       return ResponseFailedState(
         statusCode: e.response.statusCode,
         errorMessage: e.message,

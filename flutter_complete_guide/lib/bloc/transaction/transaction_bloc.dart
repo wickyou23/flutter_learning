@@ -4,6 +4,7 @@ import 'package:flutter_complete_guide/bloc/cart/cart_bloc.dart';
 import 'package:flutter_complete_guide/bloc/cart/cart_event.dart';
 import 'package:flutter_complete_guide/data/middleware/transaction_middleware.dart';
 import 'package:flutter_complete_guide/data/network_common.dart';
+import 'package:flutter_complete_guide/data/network_response_state.dart';
 import 'package:flutter_complete_guide/data/repository/transaction_repository.dart';
 import 'package:flutter_complete_guide/bloc/transaction/transaction_event.dart';
 import 'package:flutter_complete_guide/bloc/transaction/transaction_state.dart';

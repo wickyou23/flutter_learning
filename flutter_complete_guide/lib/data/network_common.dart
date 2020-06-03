@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_complete_guide/data/middleware/authentication_middleware.dart';
+import 'package:flutter_complete_guide/data/network_response_state.dart';
 import 'package:flutter_complete_guide/data/repository/auth_repository.dart';
 import 'package:flutter_complete_guide/models/auth_user.dart';
 import 'package:flutter_complete_guide/services/navigation_service.dart';
@@ -81,7 +82,8 @@ class NetworkCommon {
                 ifAbsent: () => newUser.idToken,
               );
 
-              return await this.dio.request(ro.path, options: ro);
+              var tryDio = Dio();
+              return await tryDio.request(ro.path, options: ro);
             }
             else {
               AppWireFrame.logout();
@@ -169,31 +171,4 @@ class NetworkCommon {
 
     return dio;
   }
-}
-
-abstract class ResponseState {
-  final int statusCode;
-
-  ResponseState({@required this.statusCode});
-}
-
-class ResponseSuccessState<T> extends ResponseState {
-  final T responseData;
-
-  ResponseSuccessState({@required int statusCode, @required this.responseData})
-      : super(statusCode: statusCode);
-
-  ResponseSuccessState<T> copyWith({int statusCode, T responseData}) {
-    return ResponseSuccessState<T>(
-      statusCode: statusCode ?? this.statusCode,
-      responseData: responseData ?? this.responseData,
-    );
-  }
-}
-
-class ResponseFailedState extends ResponseState {
-  final String errorMessage;
-
-  ResponseFailedState({@required int statusCode, @required this.errorMessage})
-      : super(statusCode: statusCode);
 }
